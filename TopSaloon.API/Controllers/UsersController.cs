@@ -37,7 +37,7 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.CreateAdmin(model));
         }
 
-        [HttpPost("DeleteAdmin")]
+        [HttpPost("DeleteAdmins")]
         public async Task<IActionResult> DeleteAdmin(string adminId)
         {
             return await AddItemResponseHandler(async () => await service.DeleteAdmin(adminId));
