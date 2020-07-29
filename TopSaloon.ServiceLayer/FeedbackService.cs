@@ -8,8 +8,9 @@ using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
+using AutoMapper;
+
 
 namespace TopSaloon.ServiceLayer
 {
@@ -17,11 +18,14 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
 
         public async Task<ApiResponse<ServiceFeedBackQuestion>> AddServiceFeedbackQuestion(AddServiceFeedbackQuestionDTO questionToAdd)
@@ -142,25 +146,16 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<List<OrderFeedback>>> GetAllServiceFeedbackQuestions()
+        public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllServiceFeedbackQuestions()
         {
-            ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
+            ApiResponse<List<OrderFeedbackDTO>> result = new ApiResponse<List<OrderFeedbackDTO>>();
             try
             {
-                List<OrderFeedback> feedTemp = new List<OrderFeedback>();
-                List<OrderFeedback> feedbacks = new List<OrderFeedback>();
-                feedTemp =  await unitOfWork.OrderFeedBacksManager.GetFeedbackBySubmittedStatus();
-                if (feedTemp != null)
+                var services = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.IsSubmitted == true,0,0, null,includeProperties: "OrderFeedbackQuestions");
+               
+                if (services !=null)
                 {
-                    for (int i = 0; i < feedTemp.Count; i++)
-                    {
-                        List<OrderFeedbackQuestion> OFQ = await unitOfWork.OrderFeedBackQuestionsManager.GetOrderFeedbackQuestionsByOrderFeedBackId(feedTemp[i].Id);
-                        feedTemp[i].OrderFeedbackQuestions = OFQ;
-                        feedbacks.Add(feedTemp[i]); 
-                    }
-                    
-
-                    result.Data = feedbacks;
+                    result.Data = mapper.Map<List<OrderFeedbackDTO>>(services.ToList());
                     result.Succeeded = true;
                     return result;
                 }

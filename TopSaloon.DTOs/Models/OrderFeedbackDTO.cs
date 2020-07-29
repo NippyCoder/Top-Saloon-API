@@ -13,6 +13,6 @@ namespace TopSaloon.DTOs.Models
         public DateTime? Date { get; set; }
         public bool? IsSubmitted { get; set; }
         public virtual OrderDTO Order { get; set; }
-        public virtual List<OrderFeedbackDTO> OrderFeedbackQuestions { get; set; }
+        public virtual List<OrderFeedbackQuestionDTO> OrderFeedbackQuestions { get; set; }
     }
 }

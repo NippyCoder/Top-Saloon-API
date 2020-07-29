@@ -18,6 +18,8 @@ namespace TopSaloon.API.Extensions
             caller.AddScoped<QuestionFeedbackService>();
             caller.AddScoped<FeedbackService>();
             caller.AddScoped<ServiceService>();
+            caller.AddScoped<QueueService>();
+
 
         }
     }
