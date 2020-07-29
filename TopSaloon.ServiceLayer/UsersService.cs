@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,10 +21,12 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public UsersService(UnitOfWork unitOfWork, IConfiguration config)
+        public UsersService(UnitOfWork unitOfWork, IMapper mapper, IConfiguration config)
         {
             this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
             this.config = config;
         }
         public async Task<ApiResponse<bool>> CreateRole(string roleName)

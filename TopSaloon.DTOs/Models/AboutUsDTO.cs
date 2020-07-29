@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace TopSaloon.Entities.Models
+namespace TopSaloon.DTOs.Models
 {
-    public partial class AboutUs
+    public class AboutUsDTO
     {
         public int Id { get; set; }
         public string Title { get; set; }

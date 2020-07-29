@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using TopSaloon.DTOs.Models;
 
-namespace TopSalon.Entities.Models
+namespace TopSalon.DTOs.Models
 {
     public partial class OrderDTO
     {
@@ -12,7 +13,7 @@ namespace TopSalon.Entities.Models
         public string Status { get; set; }
         public DateTime? OrderDate { get; set; }
         public int BarberQueueId { get; set; }
-        //public virtual OrderFeedback OrderFeedback { get; set; }
-        //order public virtual List<OrderService> OrderServices { get; set; }
+        public virtual OrderFeedbackDTO OrderFeedback { get; set; }
+        public virtual List<OrderServiceDTO> OrderServices { get; set; }
     }
 }
