@@ -25,6 +25,7 @@ namespace TopSaloon.Core.Managers
             adminDTO.UserId = admin.UserId;
             return adminDTO;
         }
+       
 
 
     }

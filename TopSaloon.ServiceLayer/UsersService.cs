@@ -256,6 +256,39 @@ namespace TopSaloon.ServiceLayer
 
         }
 
+
+        public async Task<ApiResponse<float>> GetUserDailyEarningPerTime(DateTime Start , DateTime End)
+        {
+            ApiResponse<float> result = new ApiResponse<float>();
+            try
+            {
+                float Total = await unitOfWork.OrdersManager.GetUserDailyEarning(Start , End); 
+                if (Total != 0f)
+                {
+                        result.Data = Total;  
+                        result.Succeeded = true;
+                         return result;
+                     
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Invalid login attempt.");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+
+        }
+
     }
 }
 

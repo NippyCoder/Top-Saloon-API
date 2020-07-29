@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using TopSalon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
@@ -140,16 +141,25 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<List<ServiceFeedBackQuestion>>> GetAllServiceFeedbackQuestionsByServiceId(string serviceId)
+        public async Task<ApiResponse<List<OrderFeedback>>> GetAllServiceFeedbackQuestions()
         {
-            ApiResponse<List<ServiceFeedBackQuestion>> result = new ApiResponse<List<ServiceFeedBackQuestion>>();
+            ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
             try
             {
-                List<ServiceFeedBackQuestion> serviceFeedbackQuestionsListToSend = await unitOfWork.ServiceFeedBackQuestionsManager.GetServiceFeedBackQuestionsByServiceId(serviceId);
-
-                if (serviceFeedbackQuestionsListToSend != null)
+                List<OrderFeedback> feedTemp = new List<OrderFeedback>();
+                List<OrderFeedback> feedbacks = new List<OrderFeedback>();
+                feedTemp =  await unitOfWork.OrderFeedBacksManager.GetFeedbackBySubmittedStatus();
+                if (feedTemp != null)
                 {
-                    result.Data = serviceFeedbackQuestionsListToSend;
+                    for (int i = 0; i < feedTemp.Count; i++)
+                    {
+                        List<OrderFeedbackQuestion> OFQ = await unitOfWork.OrderFeedBackQuestionsManager.GetOrderFeedbackQuestionsByOrderFeedBackId(feedTemp[i].Id);
+                        feedTemp[i].OrderFeedbackQuestions = OFQ;
+                        feedbacks.Add(feedTemp[i]); 
+                    }
+                    
+
+                    result.Data = feedbacks;
                     result.Succeeded = true;
                     return result;
                 }
@@ -169,6 +179,36 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<OrderFeedback>> GetAllServiceFeedbackQuestionsById(int Id)
+        {
+            ApiResponse<OrderFeedback> result = new ApiResponse<OrderFeedback>();
+            try
+            {
+                OrderFeedback  feedTemp = new  OrderFeedback();
+                feedTemp = await unitOfWork.OrderFeedBacksManager.GetByIdAsync(Id);
+                if (feedTemp != null)
+                {
+                    result.Data = feedTemp;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find service feedback question !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+
 
     }
 }

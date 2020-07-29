@@ -48,6 +48,11 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.LoginAsync(model));
         }
-
+        //GetUserDailyEarningPerTime
+        [HttpPost("GetUserDailyEarningPerTime")]
+        public async Task<IActionResult> GetUserDailyEarningPerTime(DateTime Start, DateTime End)
+        {
+            return await GetResponseHandler(async () => await service.GetUserDailyEarningPerTime(Start , End));
+        }
     }
 }

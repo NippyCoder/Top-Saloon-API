@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -31,7 +32,8 @@ namespace TopSaloon.ServiceLayer
             ApiResponse<int> result = new ApiResponse<int>();
             try
             {
-                result.Data = (await unitOfWork.BarbersQueuesManager.GetAsync(c => c.QueueStatus == "available")).Count();
+                result.Data =  await unitOfWork.BarbersQueuesManager.GetAvilableBarber();
+
                 result.Succeeded = true;
             }
             catch (Exception ex)
@@ -74,16 +76,19 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 Barber res = await unitOfWork.BarbersManager.GetByIdAsync(BarberId);
+                BaberModelDTO Temp = new BaberModelDTO();
 
                 if (res != null)
                 {
-                    var res2 = await unitOfWork.BarbersQueuesManager.GetByIdAsync(BarberId);
-                    result.Data.Id = res.Id;
-                    result.Data.Name = res.Name;
-                    result.Data.Status = res.Status;
-                    result.Data.NumberOfCustomerHandled = (int)res.NumberOfCustomersHandled;
-                   // result.Data.QueueStatus = res.BarberQueue.QueueStatus;
+                    Temp.Id = res.Id;
+                    Temp.Name = res.Name;
+                    Temp.Status = res.Status;
+                    Temp.NumberOfCustomerHandled = (int)res.NumberOfCustomersHandled;
+                    var res2 = await unitOfWork.BarbersQueuesManager.GetByIdAsync(res.Id); 
+                    Temp.QueueStatus = res2.QueueStatus;
                     result.Succeeded = true;
+                    result.Data = Temp;
+
                     return result;
                 }
                 result.Succeeded = false;
