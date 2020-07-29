@@ -1,5 +1,6 @@
 ﻿
 
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -20,25 +21,27 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public ServiceService(UnitOfWork unitOfWork, IConfiguration config)
+        public ServiceService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper; 
         }
 
-        public async Task<ApiResponse<List<Service>>> GetAllServices()
+        public async Task<ApiResponse<List<ServiceDTO>>> GetAllServices()
         {
-            ApiResponse<List<Service>> result = new ApiResponse<List<Service>>();
+            ApiResponse<List<ServiceDTO>> result = new ApiResponse<List<ServiceDTO>>();
 
             try
             {
-                List<Service> services = await unitOfWork.ServicesManager.getallservices();
+               var services  = await unitOfWork.ServicesManager.GetAsync(b => b.Id !=null, 0, 0, null, includeProperties: "FeedBackQuestions");
 
-               
                 if (services != null)
                 {
-                    result.Data = services.ToList();
+                    result.Data = mapper.Map<List<ServiceDTO>>(services.ToList());
+                    
                     result.Succeeded = true;
                     return result;
                 }
