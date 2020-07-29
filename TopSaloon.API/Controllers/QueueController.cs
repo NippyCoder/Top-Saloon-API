@@ -31,10 +31,10 @@ namespace TopSaloon.API.Controllers
             return await EditItemResponseHandler(async () => await service.ReassignOrderToDifferentQueue(orderId, newBarberQueue));
         }
 
-        //[HttpGet("GetBarberQueueWaitingTime")]
-        //public async Task<IActionResult> GetBarberQueueWaitingTime(int QueueId)
-        //{
-        //    return await GetResponseHandler(async () => await service.GetBarberQueueWaitingTime(QueueId));
-        //}
+        [HttpGet("GetBarberQueueWaitingTime")]
+        public async Task<IActionResult> GetBarberQueueWaitingTime(int QueueId)
+        {
+            return await GetResponseHandler(async () => await service.GetBarberQueueWaitingTime(QueueId));
+        }
     }
 }

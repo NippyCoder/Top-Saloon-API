@@ -77,43 +77,51 @@ namespace TopSaloon.ServiceLayer
         }
 
 
-        //public async Task<ApiResponse<BarberQueue>> GetBarberQueueWaitingTime(int QueueId)
-        //{
-        //    //Return Barber Name, barber status, barber queue status, total waiting time (orders)
+        public async Task<ApiResponse<QueueTimeHandlerModel>> GetBarberQueueWaitingTime(int QueueId)
+        {
+            //Return Barber Name, barber status, barber queue status, total waiting time (orders)
 
-        //    var result = new ApiResponse<BarberQueue>();
-        //    QueueTimeHandler handler = new QueueTimeHandler();
-        //    try
-        //    {
-        //        var barberQueue = await unitOfWork.BarbersQueuesManager.GetByIdAsync(QueueId);
+            var result = new ApiResponse<QueueTimeHandlerModel>();
+            QueueTimeHandlerModel handler = new QueueTimeHandlerModel();
 
-        //        if (barberQueue != null)
-        //        {
-        //            var queueOrders = await unitOfWork.OrdersManager.GetOrdersViaBarberQueues(QueueId);
-        //            if (barberQueue.QueueStatus == "Available")
-        //            {
-        //                handler.QueueOrders = queueOrders;
+            try
+            {
+                var barberQueue = await unitOfWork.BarbersQueuesManager.GetByIdAsync(QueueId);
 
-        //            }
-        //           else if(barberQueue.QueueStatus == "Busy")
-        //            {
+                if (barberQueue != null)
+                {
+                    handler.QueueId = barberQueue.Id;
 
-        //            }
-        //        }
-        //        else
-        //        {
-        //            result.Succeeded = false;
-        //            result.Errors.Add("Barber Queue not found");
-        //            return result;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Succeeded = false;
-        //        result.Errors.Add(ex.Message);
-        //        return result;
-        //    }
-        //}
+                    var queueOrders = await unitOfWork.OrdersManager.GetOrdersViaBarberQueues(handler.QueueId);
+                    
+                    //Check for queue availability
+                    if (queueOrders != null)
+                    {
+                        handler.Orders = queueOrders.Orders;
+                        result.Data = handler;
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        return result;
+                    }
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Barber Queue not found");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
 
         public async Task<ApiResponse<bool>> ReassignOrderToDifferentQueue(int orderId, int newBarberQueue)
         {
