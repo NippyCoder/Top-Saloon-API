@@ -16,7 +16,7 @@ namespace TopSaloon.Entities.Models
         public int CustomerId { get; set; }
         public virtual BarberQueue BarberQueue { get; set; }
         public virtual Customer Customer { get; set; }
-        public virtual List<OrderFeedback> OrderFeedbacks { get; set; }
+        public virtual OrderFeedback OrderFeedback { get; set; }
         public virtual List<OrderService> OrderServices { get; set; }
     }
 }
