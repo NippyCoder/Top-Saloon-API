@@ -15,6 +15,8 @@ namespace TopSaloon.API.AutoMapperConfig
             CreateMap<ApplicationUser, UserDTO>().ReverseMap();
             CreateMap<Administrator, AdministratorDTO>().ReverseMap();
             CreateMap<Barber, BarberDTO>().ForMember(dest => dest.Shop, opt=> opt.Ignore()).ReverseMap();
+            CreateMap<BarberProfilePhoto, BarberProfilePhotoDTO>().ForMember(dest => dest.Barber, opt => opt.Ignore()).ReverseMap();
+           // CreateMap<>
         }
     }
 }
