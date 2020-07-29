@@ -46,8 +46,6 @@ namespace TopSalon.Core.Managers
             {
                 List<Order> res = context.Orders.Where(table => table.BarberQueueId == barberQueue).ToList();
                 return res;
-              
-
             });
             
         }

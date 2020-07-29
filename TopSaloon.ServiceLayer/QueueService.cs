@@ -43,17 +43,17 @@ namespace TopSaloon.ServiceLayer
                 var BarberQueue = await unitOfWork.BarbersQueuesManager.GetBarberQueueByBarberId(barberId);
                 if (BarberQueue != null)
                 {
-                    Queue.QueueId = BarberQueue.Id;
+                    Queue.Id = BarberQueue.Id;
                     Queue.BarberId = BarberQueue.BarberId;
                     Queue.QueueStatus = BarberQueue.QueueStatus;
                     
                     var Barber = await unitOfWork.BarbersManager.GetByIdAsync(barberId);
                     if (Barber != null)
                     {
-                        Queue.BarberName = Barber.Name;
-                        Queue.BarberStatus = Barber.Status;
-                        var QueueTotalTime = await unitOfWork.OrdersManager.GetOrderByBarberQueue(Queue.QueueId);
-                        Queue.WaitingTimeInMinutes = QueueTotalTime;
+                        Queue.Barber.Name = Barber.Name;
+                        Queue.Barber.Status = Barber.Status;
+                        var QueueTotalTime = await unitOfWork.OrdersManager.GetOrderByBarberQueue(Queue.Id);
+                       // Queue. = QueueTotalTime;
 
                         result.Data = Queue;
                         result.Succeeded = true;
@@ -82,11 +82,11 @@ namespace TopSaloon.ServiceLayer
         }
 
 
-        public async Task<ApiResponse<string>> GetBarberQueueWaitingTime(int QueueId)
+        public async Task<ApiResponse<QueueTimeHandlerModel>> GetBarberQueueWaitingTime(int QueueId)
         {
             //Return Barber Name, barber status, barber queue status, total waiting time (orders)
 
-            var result = new ApiResponse<string>();
+            var result = new ApiResponse<QueueTimeHandlerModel>();
             QueueTimeHandlerModel handler = new QueueTimeHandlerModel();
 
             try
@@ -97,35 +97,24 @@ namespace TopSaloon.ServiceLayer
                 {
                     handler.QueueId = barberQueue.Id;
 
-                    var queueOrders = await unitOfWork.OrdersManager.GetOrdersViaBarberQueues(handler.QueueId);
-                    List<OrderTimeDTO> Orders = new List<OrderTimeDTO>();
+                    var queueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == handler.QueueId, 0,0,null, includeProperties: "OrderServices");
+                    
                     //Check for queue availability
                     if (queueOrders != null)
                     {
-                        List<OrderService> OrderService = new List<OrderService>();
-                        for(int i=0; i<queueOrders.Count; i++)
+                        handler.Orders = mapper.Map<List<OrderDTO>>(queueOrders.ToList());
+                        for(int i=0; i<handler.Orders.Count; i++)
                         {
-                            var queueservices = await unitOfWork.OrderServicesManager.GetOrderServices(queueOrders[i].Id);
-                            if(queueservices != null)
-                            {
-                                for (int k = 0; k < queueservices.Count; k++) 
-                                {
-                                    queueOrders[i].OrderServices[k] = queueservices[k];
-                                } 
-                               // queueOrders[i].OrderServices = ;
-                            }
+
                         }
-                        
-                        handler.Orders = mapper.Map<List<OrderTimeDTO>>(queueOrders);
-                        string json = System.Text.Json.JsonSerializer.Serialize(handler);
-                        json = json.Replace(@"\", "");
-                        result.Data = json;
+                        result.Data = handler;
                         result.Succeeded = true;
                         return result;                       
                     }
                     else
                     {
                         result.Succeeded = false;
+                        result.Errors.Add("Error fetching queue orders!");
                         return result;
                     }
                 }

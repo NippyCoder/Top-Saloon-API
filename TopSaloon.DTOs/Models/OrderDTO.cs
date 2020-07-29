@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TopSaloon.DTOs.Models;
 
-namespace TopSalon.DTOs.Models
+namespace TopSaloon.DTOs.Models
 {
     public partial class OrderDTO
     {
@@ -12,6 +12,7 @@ namespace TopSalon.DTOs.Models
         public int? OrderIdentifier { get; set; }
         public string Status { get; set; }
         public DateTime? OrderDate { get; set; }
+        public DateTime? FinishTime { get; set; }
         public int BarberQueueId { get; set; }
         public virtual OrderFeedbackDTO OrderFeedback { get; set; }
         public virtual List<OrderServiceDTO> OrderServices { get; set; }
