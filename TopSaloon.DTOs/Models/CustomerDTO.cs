@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using TopSaloon.DTOs.Models;
+using System.Text;
+using TopSalon.DTOs.Models;
 
 namespace TopSaloon.DTOs.Models
 {
@@ -13,6 +14,6 @@ namespace TopSaloon.DTOs.Models
         public int? LastBarberId { get; set; }
         public DateTime? LastVisitDate { get; set; }
         public int? TotalNumberOfVisits { get; set; }
-        public virtual List<OrderTimeDTO> Orders { get; set; }
+        public virtual List<OrderDTO> Orders { get; set; }
     }
 }

@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TopSaloon.Entities.Models;
 using TopSaloon.DTOs.Models;
+using TopSaloon.Entities.Models;
 
 namespace TopSaloon.API.AutoMapperConfig
 {
@@ -12,13 +12,9 @@ namespace TopSaloon.API.AutoMapperConfig
     {
         public AutoMapperProfile()
         {
-            // CreateMap<TestEntity, TestEntityDTO>().ReverseMap();
-            CreateMap<Order, OrderTimeDTO>().ReverseMap();
-            CreateMap<OrderService, OrderTimeServiceDTO>().ReverseMap();
-            CreateMap<Customer, CustomerDTO>().ReverseMap();
-            CreateMap<OrderFeedback, OrderFeedbackDTO>().ReverseMap();
-            CreateMap<OrderFeedbackQuestion, OrderFeedbackQuestionDTO>().ReverseMap();
-
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
+            CreateMap<Administrator, AdministratorDTO>().ReverseMap();
+            CreateMap<Barber, BarberDTO>().ForMember(dest => dest.Shop, opt=> opt.Ignore()).ReverseMap();
         }
     }
 }

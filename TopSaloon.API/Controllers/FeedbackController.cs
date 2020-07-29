@@ -42,5 +42,11 @@ namespace TopSaloon.API.Controllers
             return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestionsByServiceId(id));
         }
 
+        [HttpGet("GetFeedbackById")]
+        public async Task<IActionResult> GetFeedbackById(string id)
+        {
+            return await GetResponseHandler(async () => await service.GetOrderFeedbackById(id));
+        }
+
     }
 }

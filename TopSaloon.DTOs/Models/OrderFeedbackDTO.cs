@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using TopSaloon.DTOs.Models;
+using System.Text;
+using TopSalon.DTOs;
+using TopSalon.DTOs.Models;
 
-namespace TopSaloon.DTOs.Models
+namespace TopSalon.DTOs.Models
 {
     public class OrderFeedbackDTO
     {
@@ -11,8 +13,7 @@ namespace TopSaloon.DTOs.Models
         public int OrderId { get; set; }
         public DateTime? Date { get; set; }
         public bool? IsSubmitted { get; set; }
-        public virtual OrderTimeDTO Order { get; set; }
-        public virtual List<OrderFeedbackQuestionDTO> OrderFeedbackQuestions { get; set; }
-
+        public virtual OrderDTO Order { get; set; }
+        public virtual List<OrderFeedbackDTO> OrderFeedbackQuestions { get; set; }
     }
 }
