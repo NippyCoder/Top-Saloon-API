@@ -114,6 +114,7 @@ namespace TopSaloon.ServiceLayer
                             else
                             {
                                 CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[i].OrderDate);
+                                //Calculated DateTime: time difference between General estimate finish time and current order creation date.
                             }
                             
                         }
