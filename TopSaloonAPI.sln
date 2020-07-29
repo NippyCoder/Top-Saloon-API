@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29926.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.API", "TopSaloon.API\TopSaloon.API.csproj", "{D0DB530A-3990-4A6B-851C-3A2CDE76EB04}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.API", "TopSaloon.API\TopSaloon.API.csproj", "{D0DB530A-3990-4A6B-851C-3A2CDE76EB04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.Core", "TopSaloon.Core\TopSaloon.Core.csproj", "{4AF27329-80DF-490A-972F-CA3DCDA87181}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.Core", "TopSaloon.Core\TopSaloon.Core.csproj", "{4AF27329-80DF-490A-972F-CA3DCDA87181}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.DAL", "TopSaloon.DAL\TopSaloon.DAL.csproj", "{CBCB3CE4-6C28-45E8-948E-5DAC278511D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.DAL", "TopSaloon.DAL\TopSaloon.DAL.csproj", "{CBCB3CE4-6C28-45E8-948E-5DAC278511D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.DTOs", "TopSaloon.DTOs\TopSaloon.DTOs.csproj", "{1D3D7E29-1F78-44B8-89FC-B5BB01BE0A56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.DTOs", "TopSaloon.DTOs\TopSaloon.DTOs.csproj", "{1D3D7E29-1F78-44B8-89FC-B5BB01BE0A56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.Entities", "TopSaloon.Entities\TopSaloon.Entities.csproj", "{3E1004CB-DC47-4A67-A4B3-F967C7A92C68}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.Entities", "TopSaloon.Entities\TopSaloon.Entities.csproj", "{3E1004CB-DC47-4A67-A4B3-F967C7A92C68}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.Repository", "TopSaloon.Repository\TopSaloon.Repository.csproj", "{CC86EC9C-4605-4D36-AD59-1A1DEE04A3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.Repository", "TopSaloon.Repository\TopSaloon.Repository.csproj", "{CC86EC9C-4605-4D36-AD59-1A1DEE04A3D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TopSaloon.ServiceLayer", "TopSaloon.ServiceLayer\TopSaloon.ServiceLayer.csproj", "{5F736F35-2284-4F7F-8704-31F325ED5FEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TopSaloon.ServiceLayer", "TopSaloon.ServiceLayer\TopSaloon.ServiceLayer.csproj", "{5F736F35-2284-4F7F-8704-31F325ED5FEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
