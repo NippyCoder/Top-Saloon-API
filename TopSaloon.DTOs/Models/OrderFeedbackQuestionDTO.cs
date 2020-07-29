@@ -4,7 +4,7 @@ using TopSaloon.DTOs.Models;
 
 namespace TopSaloon.DTOs.Models
 {
-    public partial class OrderFeedbackQuestionDTO
+    public class OrderFeedbackQuestionDTO
     {
         public int Id { get; set; }
         public string Question { get; set; }
