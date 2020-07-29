@@ -4,12 +4,10 @@ using System.Text;
 
 namespace TopSaloon.DTOs.Models
 {
-    public class AdministratorDTO
+   public  class SmsDTO
     {
         public int Id { get; set; }
 
-        public string UserId { get; set; }
-
-        public AdminCreationModel adminModel { get; set; }
+        public string Body { get; set; }
     }
 }

@@ -12,6 +12,10 @@ namespace TopSaloon.API.Extensions
         public static void AddBusinessServices(this IServiceCollection caller)
         {
              caller.AddScoped<UsersService>();
+            caller.AddScoped<ServiceService>();
+            caller.AddScoped<SmsService>();
+            caller.AddScoped<AdministratorService>();
+            caller.AddScoped<BarberService>();
         }
     }
 }
