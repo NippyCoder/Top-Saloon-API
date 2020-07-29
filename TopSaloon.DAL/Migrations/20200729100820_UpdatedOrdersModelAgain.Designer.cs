@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TopSaloon.DAL;
 
 namespace TopSaloon.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200729100820_UpdatedOrdersModelAgain")]
+    partial class UpdatedOrdersModelAgain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -277,8 +279,8 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<int>("BarberId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Path")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -505,8 +507,8 @@ namespace TopSaloon.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Name")
+                        .HasColumnType("int");
 
                     b.Property<float?>("Price")
                         .HasColumnType("real");

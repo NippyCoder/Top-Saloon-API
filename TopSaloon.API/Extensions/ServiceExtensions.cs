@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TopSaloon.Entities.Models;
 using TopSaloon.ServiceLayer;
 
 namespace TopSaloon.API.Extensions
@@ -17,5 +18,13 @@ namespace TopSaloon.API.Extensions
             caller.AddScoped<AdministratorService>();
             caller.AddScoped<BarberService>();
         }
+             caller.AddScoped<BarberService>();
+            caller.AddScoped<CustomerService>();
+            caller.AddScoped<QuestionFeedbackService>();
+
+
+         
+            caller.AddScoped<FeedbackService>();
+         }
     }
 }
