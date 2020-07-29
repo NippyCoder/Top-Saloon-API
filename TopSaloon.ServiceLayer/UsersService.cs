@@ -36,7 +36,7 @@ namespace TopSaloon.ServiceLayer
                 {
                     var role = new IdentityRole();
                     role.Name = roleName;
-
+                    
                     var res = await unitOfWork.RoleManager.CreateAsync(role);
 
                     if (res.Succeeded)
