@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TopSaloon.Core;
@@ -169,6 +170,42 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+
+        public async Task<ApiResponse<DataItemsResult<OrderFeedback>>> GetOrderFeedbackById(string id)
+        {
+            ApiResponse<DataItemsResult<OrderFeedback>> result = new ApiResponse<DataItemsResult<OrderFeedback>>();
+
+            result.Data = new DataItemsResult<OrderFeedback>();
+
+            int OrderFeedbackId = Int32.Parse(id);
+
+            try
+            {
+                IQueryable<OrderFeedback> res = await unitOfWork.OrderFeedBacksManager.GetAsync(c => c.Id == OrderFeedbackId , 0, 0,null,"OrderFeedbackQuestions");
+
+                result.Data.Items = res.ToList();
+                result.Succeeded = true;
+                return result;
+
+                //else
+                //{
+                //    result.Succeeded = false;
+                //    result.Errors.Add("Unable to find order feedback !");
+                //    return result;
+                //}
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+
+
+        }
+
 
     }
 }

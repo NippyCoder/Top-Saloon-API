@@ -11,5 +11,8 @@ namespace TopSaloon.DTOs.Models
         public string UserId { get; set; }
 
         public bool IsBlocked { get; set; }
+
+        public virtual ShopDTO Shop { get; set; }
+
     }
 }
