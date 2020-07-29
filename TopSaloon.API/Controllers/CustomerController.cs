@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TopSalon.DTOs.Models;
 using TopSaloon.API.Controllers.Common;
 using TopSaloon.DTOs.Models;
 using TopSaloon.ServiceLayer;
@@ -18,6 +17,19 @@ namespace TopSaloon.API.Controllers
         {
 
         }
+
+        [HttpPost("AddNewCustomer")]
+        public async Task<IActionResult> AddNewCustomer(AddCustomerModel model)
+        {
+            return await AddItemResponseHandler(async () => await service.AddNewCustomer(model));
+        }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login(string phoneNumber)
+        {
+            return await AddItemResponseHandler(async () => await service.Login(phoneNumber));
+        }
+
         [HttpPost("GetCustomerTotalNumberOfVisit/{id}")]
         public async Task<IActionResult> GetCustomerTotalNumberOfVisit(int UserId)
         {
@@ -28,7 +40,6 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetCustomerVisitDetails(CustomerID));
         }
-
 
     }
 }
