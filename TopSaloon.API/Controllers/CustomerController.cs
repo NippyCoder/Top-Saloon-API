@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +28,17 @@ namespace TopSaloon.API.Controllers
         public async Task<IActionResult> Login(string phoneNumber)
         {
             return await AddItemResponseHandler(async () => await service.Login(phoneNumber));
+        }
+
+        [HttpPost("GetCustomerTotalNumberOfVisit/{id}")]
+        public async Task<IActionResult> GetCustomerTotalNumberOfVisit(int UserId)
+        {
+            return await AddItemResponseHandler(async () => await service.GetCustomerTotalNumberOfVisit(UserId));
+        }
+        [HttpGet("GetCustomerVisitDetails/{id}")]
+        public async Task<IActionResult> GetCustomerVisitDetails(int CustomerID)
+        {
+            return await GetResponseHandler(async () => await service.GetCustomerVisitDetails(CustomerID));
         }
 
     }
