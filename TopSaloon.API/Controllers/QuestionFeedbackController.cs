@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TopSalon.DTOs.Models;
+
 using TopSaloon.API.Controllers.Common;
 using TopSaloon.DTOs.Models;
 using TopSaloon.ServiceLayer;
