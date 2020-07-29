@@ -102,10 +102,20 @@ namespace TopSaloon.ServiceLayer
                     //Check for queue availability
                     if (queueOrders != null)
                     {
+                        TimeSpan? CalculatedDateTime;
                         handler.Orders = mapper.Map<List<OrderDTO>>(queueOrders.ToList());
                         for(int i=0; i<handler.Orders.Count; i++)
                         {
+                            if (i == 0)
+                            {
+                                handler.QueueEstimatedFinishTime = handler.Orders[i].FinishTime;
 
+                            }
+                            else
+                            {
+                                CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[i].OrderDate);
+                            }
+                            
                         }
                         result.Data = handler;
                         result.Succeeded = true;

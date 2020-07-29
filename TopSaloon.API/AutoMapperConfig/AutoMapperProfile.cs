@@ -21,7 +21,7 @@ namespace TopSaloon.API.AutoMapperConfig
             CreateMap<DailyReport, DailyReportDTO>().ReverseMap();
             CreateMap<Order, OrderDTO>()
                 .ForMember(dest => dest.BarberQueue, opt => opt.Ignore())
-                .ForMember(dest => dest.Customer, opt => opt.Ignore())
+                .ForMember(dest => dest.Customer, opt => opt.Ignore()).ForMember(dest => dest.OrderFeedback, opt => opt.Ignore())
                 .ReverseMap();
             CreateMap<OrderFeedback, OrderFeedbackDTO>().ForMember(dest => dest.Order, opt => opt.Ignore()).ReverseMap();
             CreateMap<OrderFeedbackQuestion, OrderFeedbackQuestionDTO>().ForMember(dest => dest.OrderFeedback, opt => opt.Ignore()).ReverseMap();
@@ -30,10 +30,6 @@ namespace TopSaloon.API.AutoMapperConfig
             CreateMap<ServiceFeedBackQuestion, ServiceFeedbackQuestionDTO>().ForMember(dest => dest.Service, opt => opt.Ignore()).ReverseMap();
             CreateMap<Shop, ShopDTO>().ReverseMap();
             CreateMap<SMS, SMSDTO>().ReverseMap();
-            CreateMap<Barber, BarberDTO>().ForMember(dest => dest.Shop, opt=> opt.Ignore()).ReverseMap();
-            CreateMap<Order, OrderDTO>().ForMember(dest => dest.OrderFeedback, opt => opt.Ignore()).ReverseMap();
-            CreateMap<OrderService, OrderServiceDTO>().ForMember(dest => dest.Order, opt => opt.Ignore()).ReverseMap();
-            CreateMap<OrderFeedback, OrderFeedbackDTO>().ForMember(dest => dest.Order, opt => opt.Ignore()).ReverseMap();
 
         }
     }
