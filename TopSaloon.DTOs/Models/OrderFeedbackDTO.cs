@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+using TopSaloon.DTOs;
+using TopSaloon.DTOs.Models;
 
 namespace TopSaloon.DTOs.Models
 {
