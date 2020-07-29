@@ -24,29 +24,6 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetAllBarbers());
         }
-
-    }
-}
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TopSalon.DTOs.Models;
-using TopSaloon.API.Controllers.Common;
-using TopSaloon.DTOs.Models;
-using TopSaloon.ServiceLayer;
-
-namespace TopSaloon.API.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BarberController : BaseResultHandlerController<BarberService>
-    {
-        public BarberController(BarberService _service) : base(_service)
-        {
-
-        }
         [HttpGet("GetNumberOfAvailableBarbers")]
         public async Task<IActionResult> GetNumberOfAvailableBarbers()
         {
@@ -65,6 +42,6 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(BarberId));
         }
 
-
     }
 }
+

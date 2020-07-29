@@ -98,7 +98,35 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<List<Barber>>> GetAllBarbers()
+        {
+            ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
 
+            try
+            {
+                List<Barber> barbers = await unitOfWork.BarbersManager.getallBarbers();
+
+                if (barbers != null)
+                {
+                    result.Data = barbers.ToList();
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to get list !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
     }
 }
 
