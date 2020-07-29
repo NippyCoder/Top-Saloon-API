@@ -21,15 +21,7 @@ namespace TopSaloon.Core.Managers
             return await Task.Run(() =>
             {
                 List<Service> Service = context.Services.ToList();
-                for (int i = 0; i < Service.Count; i++)
-                {
-                    var serviceFeedBackQuestionList = context.ServiceFeedBackQuestions.Where(b => b.ServiceId == Service[i].Id).ToList();
-
-                    for (int k = 0; k < serviceFeedBackQuestionList.Count; k++)
-                    {
-                        Service[i].FeedBackQuestions[k] = serviceFeedBackQuestionList[k];
-                    }
-                }
+ 
                 return Service;
             });
         }

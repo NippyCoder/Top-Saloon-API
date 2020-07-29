@@ -34,8 +34,8 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 List<Service> services = await unitOfWork.ServicesManager.getallservices();
-                //ServiceFeedBackQuestion serviceFeedBackQuestion = new ServiceFeedBackQuestion();
 
+               
                 if (services != null)
                 {
                     result.Data = services.ToList();
