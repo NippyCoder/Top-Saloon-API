@@ -11,5 +11,6 @@ namespace TopSaloon.DTOs.Models
         public int? Time { get; set; }
         public bool? IsConfirmed { get; set; }
         public int OrderId { get; set; }
+        public virtual OrderTimeDTO Order { get; set; }
     }
 }

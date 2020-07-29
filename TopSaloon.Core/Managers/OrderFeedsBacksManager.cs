@@ -1,6 +1,5 @@
 ﻿using TopSaloon.DAL;
 using TopSaloon.Entities;
-using TopSalon.Entities.Models;
 using TopSaloon.Repository;
 using System.Collections.Generic;
 using System.Linq;

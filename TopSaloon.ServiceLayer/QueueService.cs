@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace TopSaloon.ServiceLayer
 {
@@ -17,11 +20,13 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private IMapper mapper;
 
-        public QueueService(UnitOfWork unitOfWork, IConfiguration config)
+        public QueueService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
 
         public async Task<ApiResponse<BarberQueueDTO>> GetBarberQueueByBarberId(int barberId)
@@ -77,11 +82,11 @@ namespace TopSaloon.ServiceLayer
         }
 
 
-        public async Task<ApiResponse<QueueTimeHandlerModel>> GetBarberQueueWaitingTime(int QueueId)
+        public async Task<ApiResponse<string>> GetBarberQueueWaitingTime(int QueueId)
         {
             //Return Barber Name, barber status, barber queue status, total waiting time (orders)
 
-            var result = new ApiResponse<QueueTimeHandlerModel>();
+            var result = new ApiResponse<string>();
             QueueTimeHandlerModel handler = new QueueTimeHandlerModel();
 
             try
@@ -93,14 +98,30 @@ namespace TopSaloon.ServiceLayer
                     handler.QueueId = barberQueue.Id;
 
                     var queueOrders = await unitOfWork.OrdersManager.GetOrdersViaBarberQueues(handler.QueueId);
-                    
+                    List<OrderTimeDTO> Orders = new List<OrderTimeDTO>();
                     //Check for queue availability
                     if (queueOrders != null)
                     {
-                        handler.Orders = queueOrders.Orders;
-                        result.Data = handler;
+                        List<OrderService> OrderService = new List<OrderService>();
+                        for(int i=0; i<queueOrders.Count; i++)
+                        {
+                            var queueservices = await unitOfWork.OrderServicesManager.GetOrderServices(queueOrders[i].Id);
+                            if(queueservices != null)
+                            {
+                                for (int k = 0; k < queueservices.Count; k++) 
+                                {
+                                    queueOrders[i].OrderServices[k] = queueservices[k];
+                                } 
+                               // queueOrders[i].OrderServices = ;
+                            }
+                        }
+                        
+                        handler.Orders = mapper.Map<List<OrderTimeDTO>>(queueOrders);
+                        string json = System.Text.Json.JsonSerializer.Serialize(handler);
+                        json = json.Replace(@"\", "");
+                        result.Data = json;
                         result.Succeeded = true;
-                        return result;
+                        return result;                       
                     }
                     else
                     {

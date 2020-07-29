@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TopSalon.DTOs;
-using TopSalon.DTOs.Models;
+using TopSaloon.DTOs.Models;
 
-namespace TopSalon.DTOs.Models
+namespace TopSaloon.DTOs.Models
 {
     public class FeedbackDTO
     {
