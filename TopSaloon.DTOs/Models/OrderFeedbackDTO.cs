@@ -4,7 +4,7 @@ using System.Text;
 using TopSalon.DTOs;
 using TopSalon.DTOs.Models;
 
-namespace TopSalon.DTOs.Models
+namespace TopSaloon.DTOs.Models
 {
     public class OrderFeedbackDTO
     {

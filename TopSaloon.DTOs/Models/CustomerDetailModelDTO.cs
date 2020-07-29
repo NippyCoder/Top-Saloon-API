@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 
-namespace TopSalon.DTOs.Models
+namespace TopSaloon.DTOs.Models
 {
     public class CustomerDetailsModelDTO
     {
