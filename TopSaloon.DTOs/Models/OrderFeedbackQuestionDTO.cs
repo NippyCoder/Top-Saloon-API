@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using TopSaloon.DTOs.Models;
 
-namespace TopSalon.DTOs.Models
+namespace TopSaloon.DTOs.Models
 {
     public partial class OrderFeedbackQuestionDTO
     {
