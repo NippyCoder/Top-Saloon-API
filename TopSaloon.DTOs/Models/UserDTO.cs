@@ -4,9 +4,9 @@ using System.Text;
 
 namespace TopSaloon.DTOs.Models
 {
-    public class RemoveServiceFeedbackQuestionDTO
+    public class UserDTO
     {
-      public int ServiceFeedbackQuestionId { get; set; }
-
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

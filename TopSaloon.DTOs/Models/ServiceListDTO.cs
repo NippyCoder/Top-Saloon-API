@@ -4,9 +4,8 @@ using System.Text;
 
 namespace TopSaloon.DTOs.Models
 {
-    public class RemoveServiceFeedbackQuestionDTO
+    public class ServiceListDTO
     {
-      public int ServiceFeedbackQuestionId { get; set; }
-
+        public List<ServiceDTO> ServicesList { get; set; }
     }
 }
