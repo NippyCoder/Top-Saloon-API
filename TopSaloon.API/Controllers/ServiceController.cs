@@ -33,25 +33,13 @@ namespace TopSalon.API.Controllers
         {
             return await EditItemResponseHandler(async () => await service.EditService(model));
         }
-    }
-}
-
-namespace TopSaloon.API.Controllers
-{
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ServiceController : BaseResultHandlerController<ServiceService>
-    {
-        public ServiceController(ServiceService _service) : base(_service)
-        {
-
-        }
-
-        [HttpGet("getAllServices")]
-        public async Task<IActionResult> GetAllServices()
-        {
-            return await GetResponseHandler(async () => await service.GetAllServices());
-        }
+        //[HttpGet("getAllServices")]
+        //public async Task<IActionResult> GetAllServices()
+        //{
+        //     //return await GetResponseHandler(async () => await service.GetAllServices());
+        //}
 
     }
 }
+
+ 

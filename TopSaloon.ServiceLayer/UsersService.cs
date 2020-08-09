@@ -101,7 +101,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
         public async Task<ApiResponse<bool>> CreateAdmin(AdminCreationModel model)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();
@@ -257,8 +256,6 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-
-
         public async Task<ApiResponse<float>> GetUserDailyEarningPerTime(DateTime Start , DateTime End)
         {
             ApiResponse<float> result = new ApiResponse<float>();
