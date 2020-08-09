@@ -36,22 +36,26 @@ namespace TopSaloon.API.Controllers
             return await EditItemResponseHandler(async () => await service.EditServiceFeedbackQuestion(model));
         }
 
-        [HttpGet("GetAllServiceFeedbackQuestions")]
-        public async Task<IActionResult> GetAllServiceFeedbackQuestions()
+        [HttpGet("GetAllOrderFeedbackQuestions")]
+        public async Task<IActionResult> GetAllOrderFeedbackQuestions()
         {
-            return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestions());
+            return await GetResponseHandler(async () => await service.GetAllOrderFeedbackQuestions());
         }
-        //GetAllServiceFeedbackQuestionsById
-        [HttpGet("GetAllServiceFeedbackQuestionsById")]
-        public async Task<IActionResult> GetAllServiceFeedbackQuestionsById(int Id)
+         [HttpGet("GetOrderFeedbackQuestionsById")]
+        public async Task<IActionResult> GetOrderFeedbackQuestionsById(int Id)
         {
-            return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestionsById(Id));
+            return await GetResponseHandler(async () => await service.GetOrderFeedbackQuestionsById(Id));
         }
 
         [HttpGet("GetFeedbackById")]
         public async Task<IActionResult> GetFeedbackById(string id)
         {
             return await GetResponseHandler(async () => await service.GetOrderFeedbackById(id));
+        }
+        [HttpGet("GetAllOrderFeedbacks")]
+        public async Task<IActionResult> GetAllOrderFeedback()
+        {
+            return await GetResponseHandler(async () => await service.GetAllOrderFeedback());
         }
 
     }

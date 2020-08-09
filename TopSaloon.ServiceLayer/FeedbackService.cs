@@ -146,14 +146,14 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllServiceFeedbackQuestions()
+
+        public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllOrderFeedbackQuestions()
         {
             ApiResponse<List<OrderFeedbackDTO>> result = new ApiResponse<List<OrderFeedbackDTO>>();
             try
             {
-                var services = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.IsSubmitted == true,0,0, null,includeProperties: "OrderFeedbackQuestions");
-               
-                if (services !=null)
+                var services = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.IsSubmitted == true ,includeProperties: "OrderFeedbackQuestions");
+                 if (services !=null)
                 {
                     result.Data = mapper.Map<List<OrderFeedbackDTO>>(services.ToList());
                     result.Succeeded = true;
@@ -175,19 +175,17 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<OrderFeedbackDTO>> GetAllServiceFeedbackQuestionsById(int Id)
+        public async Task<ApiResponse<OrderFeedbackDTO>> GetOrderFeedbackQuestionsById(int Id)
         {
             ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
             try
             {
-                var services = await unitOfWork.OrderFeedBacksManager.GetByIdAsync(Id);
+                var orderFeedback = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.Id == Id, includeProperties: "OrderFeedbackQuestions");
+                List<OrderFeedback> order= orderFeedback.ToList(); 
 
-                if (services != null)
+                if (order != null)
                 {
-                  //  var Questions = await unitOfWork.OrderFeedBackQuestionsManager.GetByIdAsync(services.Id);
-                    //return the result of order feedback Question 
- 
-  
+                    result.Data = mapper.Map<OrderFeedbackDTO>(order[0]);
                     result.Succeeded = true;
                     return result;
                 }
@@ -242,6 +240,36 @@ namespace TopSaloon.ServiceLayer
 
 
         }
+        public async Task<ApiResponse<List<OrderFeedback>>> GetAllOrderFeedback()
+        {
+            ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
+            try
+            {
+                List<OrderFeedback> orderFeedbackQuestionsListToSend = await unitOfWork.OrderFeedBacksManager.GetFeedbackBySubmittedStatus();
+
+                if (orderFeedbackQuestionsListToSend != null)
+                {
+                    result.Data = orderFeedbackQuestionsListToSend;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find any order feedbacks !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+
 
 
     }
