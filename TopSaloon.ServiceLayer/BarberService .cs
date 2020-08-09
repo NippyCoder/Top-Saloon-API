@@ -11,7 +11,8 @@ using System.Threading.Tasks;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
- using TopSaloon.Entities.Models;
+using TopSaloon.DTOs.Models;
+using TopSaloon.Entities.Models;
 
 namespace TopSaloon.ServiceLayer
 {

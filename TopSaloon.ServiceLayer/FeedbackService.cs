@@ -175,16 +175,19 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<OrderFeedback>> GetAllServiceFeedbackQuestionsById(int Id)
+        public async Task<ApiResponse<OrderFeedbackDTO>> GetAllServiceFeedbackQuestionsById(int Id)
         {
-            ApiResponse<OrderFeedback> result = new ApiResponse<OrderFeedback>();
+            ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
             try
             {
-                OrderFeedback  feedTemp = new  OrderFeedback();
-                feedTemp = await unitOfWork.OrderFeedBacksManager.GetByIdAsync(Id);
-                if (feedTemp != null)
+                var services = await unitOfWork.OrderFeedBacksManager.GetByIdAsync(Id);
+
+                if (services != null)
                 {
-                    result.Data = feedTemp;
+                    var Questions = await unitOfWork.OrderFeedBackQuestionsManager.GetByIdAsync(services.Id);
+                    //return the result of order feedback Question 
+ 
+  
                     result.Succeeded = true;
                     return result;
                 }

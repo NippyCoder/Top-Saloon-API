@@ -11,8 +11,7 @@ using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
-using TopSaloon.Entities.Models;
+ using TopSaloon.Entities.Models;
 
 namespace TopSaloon.ServiceLayer
 {
