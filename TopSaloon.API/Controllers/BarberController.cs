@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TopSaloon.API.Controllers.Common;
 using TopSaloon.DTOs.Models;
+using TopSaloon.Entities.Models;
 using TopSaloon.ServiceLayer;
 
 namespace TopSaloon.API.Controllers
@@ -16,6 +17,12 @@ namespace TopSaloon.API.Controllers
         public BarberController(BarberService _service) : base(_service)
         {
 
+        }
+
+        [HttpGet("getAllBarbers")]
+        public async Task<IActionResult> GetAllBarbers()
+        {
+            return await GetResponseHandler(async () => await service.GetAllBarbers());
         }
         [HttpGet("GetNumberOfAvailableBarbers")]
         public async Task<IActionResult> GetNumberOfAvailableBarbers()
@@ -35,6 +42,6 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(BarberId));
         }
 
-
     }
 }
+

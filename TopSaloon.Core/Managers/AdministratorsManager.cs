@@ -25,6 +25,12 @@ namespace TopSaloon.Core.Managers
             adminDTO.UserId = admin.UserId;
             return adminDTO;
         }
+        public Administrator GetAdminByID(int id)
+        {
+            var admin = context.Administrators.Where(b => b.Id == id).FirstOrDefault();
+
+            return admin;
+        }
 
 
     }
