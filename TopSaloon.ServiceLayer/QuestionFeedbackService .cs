@@ -25,35 +25,6 @@ namespace TopSaloon.ServiceLayer
             this.unitOfWork = unitOfWork;
             this.config = config;
         }
-         public async Task<ApiResponse<List<OrderFeedback>>> GetAllOrderFeedback()
-        {
-            ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
-            try
-            {
-                List<OrderFeedback> orderFeedbackQuestionsListToSend = await unitOfWork.OrderFeedBacksManager.GetFeedbackBySubmittedStatus();
-
-                if (orderFeedbackQuestionsListToSend != null)
-                {
-                    result.Data = orderFeedbackQuestionsListToSend;
-                    result.Succeeded = true;
-                    return result;
-                }
-                else
-                {
-                    result.Succeeded = false;
-                    result.Errors.Add("Unable to find any order feedbacks !");
-                    return result;
-                }
-                //End of try . 
-            }
-            catch (Exception ex)
-            {
-                result.Succeeded = false;
-                result.Errors.Add(ex.Message);
-                result.ErrorType = ErrorType.SystemError;
-                return result;
-            }
-        }
 
     }
 }
