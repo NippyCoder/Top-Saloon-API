@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TopSaloon.DAL;
 using TopSaloon.Entities.Models;
@@ -13,7 +14,12 @@ namespace TopSaloon.Core.Managers
         {
 
         }
+         public SMS GEtSmsById(int id)
+        {
+            var sms = context.SMS.Where(b => b.Id == id ).FirstOrDefault();
 
+            return sms;
+        }
 
 
     }

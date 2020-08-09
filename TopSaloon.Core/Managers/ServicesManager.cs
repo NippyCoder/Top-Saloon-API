@@ -33,15 +33,15 @@ namespace TopSaloon.Core.Managers
         }
 
 
-        public async Task<List<Service>> GetAllServices()
+        public async Task<List<Service>> getallservices()
         {
             return await Task.Run(() =>
             {
-                List<Service> servicesList = context.Services.Select(x => x).ToList();
-                return servicesList;
+                List<Service> Service = context.Services.ToList();
+ 
+                return Service;
             });
         }
-
 
     }
 }
