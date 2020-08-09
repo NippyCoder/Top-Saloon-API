@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TopSaloon.API.Controllers.Common;
 using TopSaloon.DTOs.Models;
 using TopSaloon.ServiceLayer;
@@ -47,6 +48,11 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.LoginAsync(model));
         }
-
+        //GetUserDailyEarningPerTime
+        [HttpPost("GetUserDailyEarningPerTime")]
+        public async Task<IActionResult> GetUserDailyEarningPerTime(DateTime Start, DateTime End)
+        {
+            return await GetResponseHandler(async () => await service.GetUserDailyEarningPerTime(Start , End));
+        }
     }
 }

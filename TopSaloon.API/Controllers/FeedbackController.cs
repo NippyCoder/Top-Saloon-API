@@ -36,10 +36,16 @@ namespace TopSaloon.API.Controllers
             return await EditItemResponseHandler(async () => await service.EditServiceFeedbackQuestion(model));
         }
 
-        [HttpGet("GetServiceFeedBackQuestionsByServiceId")]
-        public async Task<IActionResult> GetAllServiceFeedbackQuestionsByServiceId(string id)
+        [HttpGet("GetAllServiceFeedbackQuestions")]
+        public async Task<IActionResult> GetAllServiceFeedbackQuestions()
         {
-            return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestionsByServiceId(id));
+            return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestions());
+        }
+        //GetAllServiceFeedbackQuestionsById
+        [HttpGet("GetAllServiceFeedbackQuestionsById")]
+        public async Task<IActionResult> GetAllServiceFeedbackQuestionsById(int Id)
+        {
+            return await GetResponseHandler(async () => await service.GetAllServiceFeedbackQuestionsById(Id));
         }
 
         [HttpGet("GetFeedbackById")]

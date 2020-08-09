@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
+using AutoMapper;
+
 
 namespace TopSaloon.ServiceLayer
 {
@@ -16,11 +18,14 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
 
         public async Task<ApiResponse<ServiceFeedBackQuestion>> AddServiceFeedbackQuestion(AddServiceFeedbackQuestionDTO questionToAdd)
@@ -141,16 +146,48 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<List<ServiceFeedBackQuestion>>> GetAllServiceFeedbackQuestionsByServiceId(string serviceId)
+        public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllServiceFeedbackQuestions()
         {
-            ApiResponse<List<ServiceFeedBackQuestion>> result = new ApiResponse<List<ServiceFeedBackQuestion>>();
+            ApiResponse<List<OrderFeedbackDTO>> result = new ApiResponse<List<OrderFeedbackDTO>>();
             try
             {
-                List<ServiceFeedBackQuestion> serviceFeedbackQuestionsListToSend = await unitOfWork.ServiceFeedBackQuestionsManager.GetServiceFeedBackQuestionsByServiceId(serviceId);
-
-                if (serviceFeedbackQuestionsListToSend != null)
+                var services = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.IsSubmitted == true,0,0, null,includeProperties: "OrderFeedbackQuestions");
+               
+                if (services !=null)
                 {
-                    result.Data = serviceFeedbackQuestionsListToSend;
+                    result.Data = mapper.Map<List<OrderFeedbackDTO>>(services.ToList());
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find service feedback question !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+        public async Task<ApiResponse<OrderFeedbackDTO>> GetAllServiceFeedbackQuestionsById(int Id)
+        {
+            ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
+            try
+            {
+                var services = await unitOfWork.OrderFeedBacksManager.GetByIdAsync(Id);
+
+                if (services != null)
+                {
+                  //  var Questions = await unitOfWork.OrderFeedBackQuestionsManager.GetByIdAsync(services.Id);
+                    //return the result of order feedback Question 
+ 
+  
                     result.Succeeded = true;
                     return result;
                 }
