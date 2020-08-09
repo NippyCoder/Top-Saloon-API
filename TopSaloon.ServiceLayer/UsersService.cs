@@ -8,11 +8,11 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
-using TopSaloon.Entities.Models;
+ using TopSaloon.Entities.Models;
 
 namespace TopSaloon.ServiceLayer
 {
@@ -101,7 +101,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
         public async Task<ApiResponse<bool>> CreateAdmin(AdminCreationModel model)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();
@@ -238,6 +237,37 @@ namespace TopSaloon.ServiceLayer
                         return result;
                     }
 
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Invalid login attempt.");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+
+        }
+        public async Task<ApiResponse<float>> GetUserDailyEarningPerTime(DateTime Start , DateTime End)
+        {
+            ApiResponse<float> result = new ApiResponse<float>();
+            try
+            {
+                float Total = await unitOfWork.OrdersManager.GetUserDailyEarning(Start , End); 
+                if (Total != 0f)
+                {
+                        result.Data = Total;  
+                        result.Succeeded = true;
+                         return result;
+                     
                 }
                 else
                 {

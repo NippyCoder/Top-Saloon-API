@@ -21,5 +21,7 @@ namespace TopSaloon.Core.Managers
             return await FindByNameAsync(username);
         }
 
+        
+
     }
 }

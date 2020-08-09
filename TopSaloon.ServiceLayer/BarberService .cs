@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,8 @@ namespace TopSaloon.ServiceLayer
             ApiResponse<int> result = new ApiResponse<int>();
             try
             {
-                result.Data = (await unitOfWork.BarbersQueuesManager.GetAsync(c => c.QueueStatus == "available")).Count();
+                result.Data =  await unitOfWork.BarbersQueuesManager.GetAvilableBarber();
+
                 result.Succeeded = true;
             }
             catch (Exception ex)
@@ -73,16 +75,19 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 Barber res = await unitOfWork.BarbersManager.GetByIdAsync(BarberId);
+                BaberModelDTO Temp = new BaberModelDTO();
 
                 if (res != null)
                 {
-                    var res2 = await unitOfWork.BarbersQueuesManager.GetByIdAsync(BarberId);
-                    result.Data.Id = res.Id;
-                    result.Data.Name = res.Name;
-                    result.Data.Status = res.Status;
-                    result.Data.NumberOfCustomerHandled = (int)res.NumberOfCustomersHandled;
-                   // result.Data.QueueStatus = res.BarberQueue.QueueStatus;
+                    Temp.Id = res.Id;
+                    Temp.Name = res.Name;
+                    Temp.Status = res.Status;
+                    Temp.NumberOfCustomerHandled = (int)res.NumberOfCustomersHandled;
+                    var res2 = await unitOfWork.BarbersQueuesManager.GetByIdAsync(res.Id); 
+                    Temp.QueueStatus = res2.QueueStatus;
                     result.Succeeded = true;
+                    result.Data = Temp;
+
                     return result;
                 }
                 result.Succeeded = false;
@@ -97,7 +102,35 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<List<Barber>>> GetAllBarbers()
+        {
+            ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
 
+            try
+            {
+                List<Barber> barbers = await unitOfWork.BarbersManager.getallBarbers();
+
+                if (barbers != null)
+                {
+                    result.Data = barbers.ToList();
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to get list !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
     }
 }
 
