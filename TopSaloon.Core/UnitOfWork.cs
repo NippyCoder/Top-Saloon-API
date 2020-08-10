@@ -11,14 +11,12 @@ namespace TopSaloon.Core
     public class UnitOfWork
     {
         private readonly ApplicationDbContext context;
-
         public UnitOfWork(ApplicationDbContext context, ApplicationUserManager userManager, RoleManager<IdentityRole> roleManager)
         {
             this.context = context;
             UserManager = userManager;
             RoleManager = roleManager;
         }
-
         public async Task<bool> SaveChangesAsync()
         {
             try
@@ -39,7 +37,6 @@ namespace TopSaloon.Core
             }
             return false;
         }
-
         public ApplicationUserManager UserManager { get; private set; }
         public RoleManager<IdentityRole> RoleManager { get; private set; }
 
@@ -224,6 +221,33 @@ namespace TopSaloon.Core
                 return sMSManager;
             }
         }
+
+        private CompleteOrdersManager completeOrdersManager;
+        public CompleteOrdersManager CompleteOrdersManager
+        {
+            get
+            {
+                if (completeOrdersManager == null)
+                {
+                    completeOrdersManager = new CompleteOrdersManager(context);
+                }
+                return completeOrdersManager;
+            }
+        }
+
+        private BarberLoginsManager barberLoginsManager;
+        public BarberLoginsManager BarberLoginsManager
+        {
+            get
+            {
+                if (barberLoginsManager == null)
+                {
+                    barberLoginsManager = new BarberLoginsManager(context);
+                }
+                return barberLoginsManager;
+            }
+        }
+
     }
     
 }
