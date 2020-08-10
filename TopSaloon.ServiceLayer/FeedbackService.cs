@@ -146,7 +146,6 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-
         public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllOrderFeedbackQuestions()
         {
             ApiResponse<List<OrderFeedbackDTO>> result = new ApiResponse<List<OrderFeedbackDTO>>();
@@ -175,6 +174,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+
         public async Task<ApiResponse<OrderFeedbackDTO>> GetOrderFeedbackQuestionsById(int Id)
         {
             ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
@@ -240,6 +240,7 @@ namespace TopSaloon.ServiceLayer
 
 
         }
+
         public async Task<ApiResponse<List<OrderFeedback>>> GetAllOrderFeedback()
         {
             ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
