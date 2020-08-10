@@ -25,7 +25,7 @@ namespace TopSaloon.API.Controllers
             return await GetResponseHandler(async () => await service.getSmsById(id));
         }
         [HttpPut("EditSms")]
-        public async Task<IActionResult> editSmsById(SMSDTO model)
+        public async Task<IActionResult> editSmsById(SmsDTO model)
         {
             return await EditItemResponseHandler(async () => await service.editSmSbyId(model));
         }

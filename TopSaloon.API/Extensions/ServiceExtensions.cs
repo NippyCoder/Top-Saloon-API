@@ -12,7 +12,7 @@ namespace TopSaloon.API.Extensions
     {
         public static void AddBusinessServices(this IServiceCollection caller)
         {
-             caller.AddScoped<UsersService>();
+            caller.AddScoped<UsersService>();
             caller.AddScoped<ServiceService>();
             caller.AddScoped<SmsService>();
             caller.AddScoped<AdministratorService>();
@@ -22,14 +22,9 @@ namespace TopSaloon.API.Extensions
             caller.AddScoped<BarberService>();
             caller.AddScoped<CustomerService>();
             caller.AddScoped<QuestionFeedbackService>();
-
-
-         
             caller.AddScoped<FeedbackService>();
             caller.AddScoped<ServiceService>();
             caller.AddScoped<QueueService>();
-
-
         }
     }
     }
