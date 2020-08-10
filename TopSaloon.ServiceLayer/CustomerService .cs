@@ -168,7 +168,84 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+        public async Task<ApiResponse<int>> GetNumberOfCustomerVisitForToday(DateTime date)
+        {
+            ApiResponse<int> result = new ApiResponse<int>();
 
+            try
+            {
+                var AllOrdersByDay = await unitOfWork.OrdersManager.TotalVisitperDay(date);
+
+                if (AllOrdersByDay != 0)
+                {
+                    result.Data = AllOrdersByDay;
+                    result.Succeeded = true;
+                    return result;
+                }
+                result.Succeeded = false;
+                result.Errors.Add("It Is New Customer !");
+                result.ErrorType = ErrorType.LogicalError;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<float>> TotalAmountOfServiceCostForToday(DateTime date)
+        {
+            ApiResponse<float> result = new ApiResponse<float>();
+
+            try
+            {
+                var AllOrdersByDay = await unitOfWork.OrdersManager.TotalAmountOfServiceCostPerDay(date);
+
+                if (AllOrdersByDay != 0)
+                {
+                    result.Data = AllOrdersByDay;
+                    result.Succeeded = true;
+                    return result;
+                }
+                result.Succeeded = false;
+                result.Errors.Add("It Is New Customer !");
+                result.ErrorType = ErrorType.LogicalError;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<float>> AverageWaitingForToday(DateTime date)
+        {
+            ApiResponse<float> result = new ApiResponse<float>();
+
+            try
+            {
+                var AllOrdersByDay = await unitOfWork.OrdersManager.AverageWaitingTimePerDay(date);
+
+                if (AllOrdersByDay != 0)
+                {
+                    result.Data = AllOrdersByDay;
+                    result.Succeeded = true;
+                    return result;
+                }
+                result.Succeeded = false;
+                result.Errors.Add("It Is New Customer !");
+                result.ErrorType = ErrorType.LogicalError;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
 
 
     }

@@ -24,6 +24,7 @@ namespace TopSaloon.Core.Managers
                 return customer;
             });
         }
+       
 
     }
 }

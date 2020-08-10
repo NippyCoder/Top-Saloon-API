@@ -27,5 +27,6 @@ namespace TopSaloon.Core.Managers
             });
         }
 
+
     }
 }
