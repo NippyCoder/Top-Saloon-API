@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
+using AutoMapper;
+
 
 namespace TopSaloon.ServiceLayer
 {
@@ -16,11 +18,14 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public FeedbackService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
 
         public async Task<ApiResponse<ServiceFeedBackQuestion>> AddServiceFeedbackQuestion(AddServiceFeedbackQuestionDTO questionToAdd)
@@ -141,16 +146,46 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<List<ServiceFeedBackQuestion>>> GetAllServiceFeedbackQuestionsByServiceId(string serviceId)
+
+        public async Task<ApiResponse<List<OrderFeedbackDTO>>> GetAllOrderFeedbackQuestions()
         {
-            ApiResponse<List<ServiceFeedBackQuestion>> result = new ApiResponse<List<ServiceFeedBackQuestion>>();
+            ApiResponse<List<OrderFeedbackDTO>> result = new ApiResponse<List<OrderFeedbackDTO>>();
             try
             {
-                List<ServiceFeedBackQuestion> serviceFeedbackQuestionsListToSend = await unitOfWork.ServiceFeedBackQuestionsManager.GetServiceFeedBackQuestionsByServiceId(serviceId);
-
-                if (serviceFeedbackQuestionsListToSend != null)
+                var services = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.IsSubmitted == true ,includeProperties: "OrderFeedbackQuestions");
+                 if (services !=null)
                 {
-                    result.Data = serviceFeedbackQuestionsListToSend;
+                    result.Data = mapper.Map<List<OrderFeedbackDTO>>(services.ToList());
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find service feedback question !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+        public async Task<ApiResponse<OrderFeedbackDTO>> GetOrderFeedbackQuestionsById(int Id)
+        {
+            ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
+            try
+            {
+                var orderFeedback = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.Id == Id, includeProperties: "OrderFeedbackQuestions");
+                List<OrderFeedback> order= orderFeedback.ToList(); 
+
+                if (order != null)
+                {
+                    result.Data = mapper.Map<OrderFeedbackDTO>(order[0]);
                     result.Succeeded = true;
                     return result;
                 }
@@ -205,6 +240,36 @@ namespace TopSaloon.ServiceLayer
 
 
         }
+        public async Task<ApiResponse<List<OrderFeedback>>> GetAllOrderFeedback()
+        {
+            ApiResponse<List<OrderFeedback>> result = new ApiResponse<List<OrderFeedback>>();
+            try
+            {
+                List<OrderFeedback> orderFeedbackQuestionsListToSend = await unitOfWork.OrderFeedBacksManager.GetFeedbackBySubmittedStatus();
+
+                if (orderFeedbackQuestionsListToSend != null)
+                {
+                    result.Data = orderFeedbackQuestionsListToSend;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find any order feedbacks !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+
 
 
     }
