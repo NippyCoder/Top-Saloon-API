@@ -12,7 +12,7 @@ namespace TopSaloon.DTOs.Models
         public int? NumberOfCustomersHandled { get; set; }
         public int ShopId { get; set; }
         public virtual ShopDTO Shop { get; set; }
-        public virtual List<BarberProfilePhotoDTO> BarberProfilePhotos { get; set; }
-        public virtual List<BarberQueueDTO> BarberQueues { get; set; }
+        public virtual BarberProfilePhotoDTO BarberProfilePhoto { get; set; }
+        public virtual BarberQueueDTO BarberQueue { get; set; }
     }
 }

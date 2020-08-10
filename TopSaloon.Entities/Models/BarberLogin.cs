@@ -1,0 +1,14 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace TopSaloon.Entities.Models
+{
+     public  class BarberLogin
+    {
+        public int Id { get; set; }
+        public DateTime? LoginDateTime { get; set; }
+        public DateTime? logoutDateTime { get; set; }
+        public int? NumberOfCompleteOrders { get; set; }
+    }
+}

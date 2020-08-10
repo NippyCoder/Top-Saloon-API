@@ -7,9 +7,8 @@ namespace TopSaloon.DTOs.Models
     public class AdministratorDTO
     {
         public int Id { get; set; }
-
         public string UserId { get; set; }
-
-        public AdminCreationModel adminModel { get; set; }
+        public int ShopId { get; set; }
+        public virtual ShopDTO Shop { get; set; }
     }
 }

@@ -8,7 +8,6 @@ namespace TopSaloon.Entities.Models
         public int Id { get; set; }
         public string QueueStatus { get; set; }
         public int BarberId { get; set; }
-
         public virtual Barber Barber { get; set; }
         public virtual List<Order> Orders { get; set; }
     }

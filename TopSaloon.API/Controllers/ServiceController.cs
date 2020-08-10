@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TopSaloon.API.Controllers.Common;
-using TopSaloon.DAL.Migrations;
 using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
 using TopSaloon.ServiceLayer;

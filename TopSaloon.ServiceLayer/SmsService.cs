@@ -59,7 +59,7 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-        public async Task<ApiResponse<bool>> editSmSbyId(SMSDTO model)
+        public async Task<ApiResponse<bool>> editSmSbyId(SmsDTO model)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();
 
