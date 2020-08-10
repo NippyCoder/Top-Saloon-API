@@ -69,5 +69,60 @@ namespace TopSalon.Core.Managers
                 return total;
             });
         }
+        public async Task<int> TotalVisitperDay(DateTime date)
+        {
+
+            return await Task.Run(() =>
+            {
+                var today = context.Orders.Where(a => a.OrderDate == date  && a.Status=="done");
+                int Result = today.Count();
+
+                return Result;
+
+            });
+        }
+        public async Task<float> TotalAmountOfServiceCostPerDay(DateTime date)
+        {
+
+            return await Task.Run(() =>
+            {
+                var today = context.Orders.Where(a => a.OrderDate == date && a.FinishTime == date);
+
+                float Result =0f ;
+                List<Order> tmp = today.ToList(); 
+                for (int i = 0; i < today.Count(); i++)
+                {
+                    Result += (float)tmp[i].OrderTotal; 
+                }
+
+                return Result;
+
+            });
+        }
+        public async Task<float> AverageWaitingTimePerDay(DateTime date)
+        {
+
+            return await Task.Run(() =>
+            {
+                var today = context.Orders.Where(a => a.OrderDate == date && a.FinishTime == date && a.Status=="done");
+
+                float Result = 0f;
+                List<Order> tmp = today.ToList();
+                int listcount = today.Count(); 
+                if (listcount >= 1)
+                {
+                    for (int i = 0; i < listcount; i++)
+                    {
+                        Result += (float)tmp[i].WaitingTimeInMinutes;
+                    }
+                    Result = Result / listcount;
+
+                }
+               
+                return Result;
+
+            });
+        }
+
     }
 }
