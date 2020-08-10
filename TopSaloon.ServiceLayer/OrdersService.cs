@@ -99,58 +99,99 @@ namespace TopSaloon.ServiceLayer
 
         public async Task<ApiResponse<string>> CancelOrder(int orderId)
         {
+            //Cancel Order: set order status to cancelled, pop order from corresponding queue.
 
             ApiResponse<string> result = new ApiResponse<string>();
 
             try
             {
-                var order = await unitOfWork.OrdersManager.GetByIdAsync(orderId);
-
-                if (order != null)
+                var order = await unitOfWork.OrdersManager.GetAsync(b => b.Id == orderId, 0, 0, null, includeProperties: "OrderServices");
+                Order OrderToUpdate = order.FirstOrDefault();
+                if (OrderToUpdate != null)
                 {
-                    order.Status = "Cancelled";
-
-                    var isUpdated = await unitOfWork.OrdersManager.UpdateAsync(order);
-                    if (isUpdated)
-                    {                      
-                        var orderServices = await unitOfWork.OrderServicesManager.GetOrderServices(orderId);
-                        bool orderService_Updated = false;
-
-                        for(int i=0; i<orderServices.Count; i++)
+                    OrderToUpdate.Status = "Cancelled";
+                    var isUpdated_OrderService = false;
+                    for (int i = 0; i < OrderToUpdate.OrderServices.Count; i++)
+                    {
+                        OrderToUpdate.OrderServices[i].IsConfirmed = false;
+                        isUpdated_OrderService = true;
+                    }
+                    var OrderUpdateResult = false;
+                    if (isUpdated_OrderService)
+                    {
+                        OrderUpdateResult = await unitOfWork.OrdersManager.UpdateAsync(OrderToUpdate);
+                    }
+                    //= await unitOfWork.SaveChangesAsync();
+                    if (OrderUpdateResult)
+                    {
+                        var barberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == OrderToUpdate.BarberQueueId, 0, 0, null, includeProperties: "Orders");
+                        if(barberQueue != null)
                         {
-                            orderServices[i].IsConfirmed = false;
-                            var isUpdated_OrderService = await unitOfWork.OrderServicesManager.UpdateAsync(orderServices[i]);
-                            if (isUpdated_OrderService)
+                            BarberQueue QueueToUpdate = barberQueue.FirstOrDefault();
+                            for(int i=0; i<QueueToUpdate.Orders.Count; i++)
                             {
-                                orderService_Updated = true;
+                                if(QueueToUpdate.Orders[i].Id == orderId)
+                                {
+                                    QueueToUpdate.Orders.Remove(QueueToUpdate.Orders[i]);
+                                }
+                            }
+                            await unitOfWork.BarbersQueuesManager.UpdateAsync(QueueToUpdate);
+                            var finalres = await unitOfWork.SaveChangesAsync();
+                            if (finalres)
+                            {
+                                result.Data = "Order cancelled successfully.";
+                                result.Succeeded = true;
+                                return result;
                             }
                             else
                             {
-                                orderService_Updated = false;
+                                result.Data = "Cancellation error.";
+                                result.Succeeded = false;
+                                return result;
                             }
-                        }
-                        if (orderService_Updated)
-                        {
-                            result.Data = "Order cancelled.";
-                            result.Succeeded = true;
-                            return result;
                         }
                         else
                         {
-                            result.Data = "Error with cancelling order";
-                            result.Succeeded = false;
+                            result.Data = "Error";
+                            result.Errors.Add("Failed to fetch barber Queue !");
                             return result;
-                        }
+                        }                    
+                        //if (isUpdated_OrderService)
+                        //{
+                        //    var UpdateResult = await unitOfWork.SaveChangesAsync();
+                        //    if (UpdateResult)
+                        //    {
+                        //        result.Data = "Order cancelled successfully!";
+                        //        result.Succeeded = true;
+                        //        return result;
+                        //    }
+                        //    else
+                        //    {
+                        //        result.Data = "Error.";
+                        //        result.Errors.Add("Error Finalizing cancellation");
+                        //        result.Succeeded = false;
+                        //        return result;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    result.Data = "Error.";
+                        //    result.Errors.Add("Error cancelling order service !");
+                        //    result.Succeeded = false;
+                        //    return result;
+                        //}
                     }
                     else
                     {
+                        result.Data = "Error.";
+                        result.Errors.Add("Error cancelling order !");
                         result.Succeeded = false;
-                        result.Errors.Add("Error updating order service !");
                         return result;
                     }
                 }
                 else
                 {
+                    result.Data = "Error";
                     result.Succeeded = false;
                     result.Errors.Add("Could not fetch order service");
                     return result;

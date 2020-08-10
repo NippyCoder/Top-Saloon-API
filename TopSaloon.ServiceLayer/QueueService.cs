@@ -81,6 +81,127 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+        //Barber Queue order addition
+
+        public async Task<ApiResponse<bool>> AddOrderToQueue(OrderToAddDTO order, int QueueId)
+        {
+            var result = new ApiResponse<bool>();
+
+
+            BarberQueue Queue = new BarberQueue();
+            Order currentOrder = new Order();
+            try
+            {
+                var BarberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == QueueId, 0, 0, null, includeProperties: "Orders");
+                if (BarberQueue != null)
+                {
+                    Queue = BarberQueue.FirstOrDefault();
+                    // var QueueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == QueueId, 0, 0, null, includeProperties: "OrderServices");
+
+                    if (Queue.Orders.Count == 0 && Queue.QueueStatus == "idle") // Empty queue 
+                    {
+                        currentOrder.Id = order.Id;
+                        currentOrder.OrderDate = DateTime.Now;
+                        currentOrder.FinishTime = DateTime.Now.AddMinutes(Convert.ToDouble(order.WaitingTimeInMinutes));
+                        currentOrder.OrderIdentifier = order.OrderIdentifier;
+                        currentOrder.OrderTotal = order.OrderTotal;
+                        currentOrder.Status = "inprogress";
+                        currentOrder.WaitingTimeInMinutes = order.WaitingTimeInMinutes;
+                        currentOrder.BarberQueueId = order.BarberQueueId;
+                        currentOrder.CustomerId = order.CustomerId;
+                        currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices.ToList());
+                        var CreationResult = await unitOfWork.OrdersManager.CreateAsync(currentOrder);
+            
+                        if (CreationResult != null)
+                        {
+                            OrderService ServiceCreationResult;
+                            for(int i=0; i<CreationResult.OrderServices.Count; i++)
+                            {
+                                ServiceCreationResult = await unitOfWork.OrderServicesManager.CreateAsync(currentOrder.OrderServices[i]);
+                            }
+                            Queue.QueueStatus = "busy";
+                            var BarberUpdateResult = await unitOfWork.BarbersQueuesManager.UpdateAsync(Queue);
+                            var FinalRes = await unitOfWork.SaveChangesAsync();
+                            if (FinalRes)
+                            {
+                                result.Succeeded = true;
+                                result.Data = true;
+                                return result;
+                            }
+                            else
+                            {
+                                result.Succeeded = false;
+                                result.Errors.Add("Unable to save changes");
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        currentOrder.Id = order.Id;
+                        currentOrder.OrderDate = DateTime.Now;
+                        currentOrder.FinishTime = null;
+                        currentOrder.OrderIdentifier = order.OrderIdentifier;
+                        currentOrder.OrderTotal = order.OrderTotal;
+                        currentOrder.Status = "pending";
+                        currentOrder.WaitingTimeInMinutes = order.WaitingTimeInMinutes;
+                        currentOrder.BarberQueueId = order.BarberQueueId;
+                        currentOrder.CustomerId = order.CustomerId;
+                        currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices.ToList());
+                        var CreationResult = await unitOfWork.OrdersManager.CreateAsync(currentOrder);
+
+                        if (CreationResult != null)
+                        {
+                            OrderService ServiceCreationResult;
+                            for (int i = 0; i < CreationResult.OrderServices.Count; i++)
+                            {
+                                ServiceCreationResult = await unitOfWork.OrderServicesManager.CreateAsync(currentOrder.OrderServices[i]);
+                            }
+                            var FinalRes = await unitOfWork.SaveChangesAsync();
+                            if (FinalRes)
+                            {
+                                result.Succeeded = true;
+                                result.Data = true;
+                                return result;
+                            }
+                            else
+                            {
+                                result.Succeeded = false;
+                                result.Errors.Add("Unable to save changes");
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            return result;
+                        }
+                    }
+                    //// Should be nested
+                    //if (BarberQueue.QueueStatus == "idle") // Empty queue
+                    //{
+
+                    //}
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Barber queue not found");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
 
         public async Task<ApiResponse<QueueTimeHandlerModel>> GetBarberQueueWaitingTime(int QueueId)
         {
@@ -109,11 +230,14 @@ namespace TopSaloon.ServiceLayer
                             if (i == 0)
                             {
                                 handler.QueueEstimatedFinishTime = handler.Orders[i].FinishTime;
-
+                                handler.QueueEstimatedWaitingTime = 0;
                             }
                             else
                             {
                                 CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[i].OrderDate);
+                                //Waiting Time = previous order finish time - Order creation time
+                                handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
+                                handler.QueueEstimatedFinishTime = handler.QueueEstimatedFinishTime.Value.AddMinutes(Convert.ToDouble(handler.Orders[i].WaitingTimeInMinutes.Value));
                                 //Calculated DateTime: time difference between General estimate finish time and current order creation date.
                             }
                             
@@ -201,5 +325,6 @@ namespace TopSaloon.ServiceLayer
         }
 
     }
+
 }
 
