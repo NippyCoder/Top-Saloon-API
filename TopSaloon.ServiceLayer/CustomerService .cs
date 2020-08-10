@@ -11,18 +11,23 @@ using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
 using TopSaloon.DTOs.Models;
-using TopSaloon.Entities.Models; 
+using TopSaloon.Entities.Models;
+using AutoMapper;
+
 namespace TopSaloon.ServiceLayer
 {
     public class CustomerService
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public CustomerService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public CustomerService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
         public async Task<ApiResponse<int>> GetCustomerTotalNumberOfVisit(int UserId)
         {
@@ -58,26 +63,24 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                Customer customer = await unitOfWork.CustomersManager.GetByIdAsync(UserId);
-
-                if (customer != null)
+                
+                // CWO is Customer With there Orders 
+                var CWO = await unitOfWork.CustomersManager.GetAsync(b => b.Id == UserId, includeProperties: "Order");
+                List<Customer> customer = CWO.ToList(); 
+                if (CWO != null)
                 {
-                    CustomerDetailsModelDTO customerDetailsModelDTO = new CustomerDetailsModelDTO();
-                    customerDetailsModelDTO.Name = customer.Name;
-                    customerDetailsModelDTO.PhoneNumber = customer.PhoneNumber;
-                    customerDetailsModelDTO.TotalNumberOfVisit = (int)customer.TotalNumberOfVisits;
-                    customerDetailsModelDTO.dateVisitDate = (DateTime)customer.LastVisitDate;
-
-
-
-                    result.Data = customerDetailsModelDTO;
+                     
+                    result.Data = mapper.Map<CustomerDetailsModelDTO>(customer[0]);
                     result.Succeeded = true;
                     return result;
                 }
-                result.Succeeded = false;
-                result.Errors.Add("It Is New Customer !");
-                result.ErrorType = ErrorType.LogicalError;
-                return result;
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("It Is New Customer !");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
             }
             catch (Exception ex)
             {

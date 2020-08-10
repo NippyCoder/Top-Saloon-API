@@ -29,8 +29,8 @@ namespace TopSaloon.Core.Managers
             {
                 int Result = context.BarberQueues.Where(a => a.QueueStatus == "avaliable").Count();
 
-                return Result;
-
+                return Result;  
+                        
             });
         }
 

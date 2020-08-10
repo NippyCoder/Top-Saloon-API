@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -31,7 +30,7 @@ namespace TopSaloon.ServiceLayer
             ApiResponse<int> result = new ApiResponse<int>();
             try
             {
-                result.Data =  await unitOfWork.BarbersQueuesManager.GetAvilableBarber();
+                result.Data =  await unitOfWork.BarbersManager.GetNumberOfAvailableBarber();
 
                 result.Succeeded = true;
             }
@@ -108,17 +107,17 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                List<Barber> barbers = await unitOfWork.BarbersManager.getallBarbers();
+                List<Barber> barbers = await unitOfWork.BarbersManager.GetAllAvailableBarber();
 
                 if (barbers != null)
                 {
-                    result.Data = barbers.ToList();
+                    result.Data = barbers;
                     result.Succeeded = true;
                     return result;
                 }
                 else
                 {
-                    result.Errors.Add("Unable to get list !");
+                    result.Errors.Add("Unable to get any of barbers it!");
                     result.Succeeded = false;
                     return result;
                 }
