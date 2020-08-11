@@ -26,12 +26,10 @@ namespace TopSaloon.ServiceLayer
             this.unitOfWork = unitOfWork;
             this.config = config;
         }
-
-
-        public async Task<ApiResponse<String>> getSmsById(int smsId)
+        public async Task<ApiResponse<String>> GetSMS()
         {
             ApiResponse<string> result = new ApiResponse<string>();
-            SMS smsValue = await unitOfWork.SMSManager.GetByIdAsync(smsId);
+            SMS smsValue = await unitOfWork.SMSManager.GetByIdAsync(1);
             try
             {
                 if (result != null)
@@ -45,7 +43,7 @@ namespace TopSaloon.ServiceLayer
                 else
                 {
                     result.Succeeded = false;
-                    result.Errors.Add("Invalid input value");
+                    result.Errors.Add("Failed to retrieve SMS !");
                     return result;
                 }
 
@@ -59,34 +57,26 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-        public async Task<ApiResponse<bool>> editSmSbyId(SmsDTO model)
+        public async Task<ApiResponse<bool>> EditSMS(SmsDTO model)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();
-
-
             try
             {
                 SMS value = await unitOfWork.SMSManager.GetByIdAsync(model.Id);
-
                 value.Body = model.Body;
-                var result1 = await unitOfWork.SaveChangesAsync();
-
-                if (result1 == true)
+                var res = await unitOfWork.SaveChangesAsync();
+                if (res == true)
                 {
                     result.Data = true;
                     result.Succeeded = true;
                     return result;
                 }
-
-
                 else
                 {
                     result.Succeeded = false;
-                    result.Errors.Add("Invalid input value");
+                    result.Errors.Add("Failed to edit SMS !");
                     return result;
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -94,7 +84,6 @@ namespace TopSaloon.ServiceLayer
                 result.Errors.Add(ex.Message);
                 return result;
             }
-
         }
     }
 }

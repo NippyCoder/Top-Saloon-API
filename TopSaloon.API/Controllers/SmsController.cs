@@ -19,15 +19,16 @@ namespace TopSaloon.API.Controllers
 
         }
 
-        [HttpGet("getsms/{id}")]
-        public async Task<IActionResult> getSmsById(int id)
+        [HttpGet("GetSMS")]
+        public async Task<IActionResult> GetSMS()
         {
-            return await GetResponseHandler(async () => await service.getSmsById(id));
+            return await GetResponseHandler(async () => await service.GetSMS());
         }
-        [HttpPut("EditSms")]
-        public async Task<IActionResult> editSmsById(SmsDTO model)
+
+        [HttpPost("EditSMS")]
+        public async Task<IActionResult> EditSMS(SmsDTO model)
         {
-            return await EditItemResponseHandler(async () => await service.editSmSbyId(model));
+            return await EditItemResponseHandler(async () => await service.EditSMS(model));
         }
 
     }
