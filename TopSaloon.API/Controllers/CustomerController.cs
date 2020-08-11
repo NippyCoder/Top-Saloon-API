@@ -30,27 +30,27 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.Login(phoneNumber));
         }
 
-        [HttpPost("GetCustomerTotalNumberOfVisit/{id}")]
-        public async Task<IActionResult> GetCustomerTotalNumberOfVisit(int UserId)
+        [HttpGet("GetCustomerTotalNumberOfVisit/{id}")]
+        public async Task<IActionResult> GetCustomerTotalNumberOfVisit(int CustomerId)
         {
-            return await AddItemResponseHandler(async () => await service.GetCustomerTotalNumberOfVisit(UserId));
+            return await AddItemResponseHandler(async () => await service.GetCustomerTotalNumberOfVisit(CustomerId));
         }
         [HttpGet("GetCustomerVisitDetails/{id}")]
         public async Task<IActionResult> GetCustomerVisitDetails(int CustomerID)
         {
             return await GetResponseHandler(async () => await service.GetCustomerVisitDetails(CustomerID));
         }
-        [HttpPost("GetNumberOfCustomerVisitForToday")]
+        [HttpGet("GetNumberOfCustomerVisitForToday")]
         public async Task<IActionResult> GetCustomerVisitDetails(DateTime date)
         {
             return await GetResponseHandler(async () => await service.GetNumberOfCustomerVisitForToday(date));
         }
-        [HttpPost("TotalAmountOfServiceCostForToday")]
+        [HttpGet("TotalAmountOfServiceCostForToday")]
         public async Task<IActionResult> TotalAmountOfServiceCostForToday(DateTime date)
         {
             return await GetResponseHandler(async () => await service.TotalAmountOfServiceCostForToday(date));
         }
-        [HttpPost("AverageWaitingForToday")]
+        [HttpGet("AverageWaitingForToday")]
         public async Task<IActionResult> AverageWaitingForToday(DateTime date)
         {
             return await GetResponseHandler(async () => await service.AverageWaitingForToday(date));

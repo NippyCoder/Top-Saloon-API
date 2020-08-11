@@ -58,11 +58,11 @@ namespace TopSalon.Core.Managers
         {
             return await Task.Run(() =>
             {
-                var  Result = context.Orders.Where(A => A.OrderDate >= Start && A.OrderDate <= End).ToList();
+                var  Result = context.CompleteOrders.Where(A => A.OrderDateTime >= Start && A.OrderDateTime <= End).ToList();
                 float total = 0.0f;
                 for (int i = 0; i < Result.Count(); i++)
                 {
-                    total += (float)Result[i].OrderTotal; 
+                    total += (float)Result[i].OrderTotalAmount; 
                  }
 
                
@@ -74,7 +74,7 @@ namespace TopSalon.Core.Managers
 
             return await Task.Run(() =>
             {
-                var today = context.Orders.Where(a => a.OrderDate == date  && a.Status=="done");
+                var today = context.CompleteOrders.Where(a => a.OrderDateTime == date  && a.Status=="done");
                 int Result = today.Count();
 
                 return Result;
@@ -86,13 +86,13 @@ namespace TopSalon.Core.Managers
 
             return await Task.Run(() =>
             {
-                var today = context.Orders.Where(a => a.OrderDate == date && a.FinishTime == date);
+                var today = context.CompleteOrders.Where(a => a.OrderDateTime == date );
 
                 float Result =0f ;
-                List<Order> tmp = today.ToList(); 
+                List<CompleteOrder> tmp = today.ToList(); 
                 for (int i = 0; i < today.Count(); i++)
                 {
-                    Result += (float)tmp[i].OrderTotal; 
+                    Result += (float)tmp[i].OrderTotalAmount; 
                 }
 
                 return Result;
@@ -104,16 +104,16 @@ namespace TopSalon.Core.Managers
 
             return await Task.Run(() =>
             {
-                var today = context.Orders.Where(a => a.OrderDate == date && a.FinishTime == date && a.Status=="done");
+                var today = context.CompleteOrders.Where(a => a.OrderDateTime == date && a.Status=="done");
 
                 float Result = 0f;
-                List<Order> tmp = today.ToList();
+                List<CompleteOrder> tmp = today.ToList();
                 int listcount = today.Count(); 
                 if (listcount >= 1)
                 {
                     for (int i = 0; i < listcount; i++)
                     {
-                        Result += (float)tmp[i].WaitingTimeInMinutes;
+                        Result += (float)tmp[i].CustomerWaitingTimeInMinutes;
                     }
                     Result = Result / listcount;
 
