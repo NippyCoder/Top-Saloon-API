@@ -11,35 +11,49 @@ using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
 using TopSaloon.DTOs.Models;
-using TopSaloon.Entities.Models; 
+using TopSaloon.Entities.Models;
+using AutoMapper;
+
 namespace TopSaloon.ServiceLayer
 {
     public class CustomerService
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public CustomerService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public CustomerService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
-        public async Task<ApiResponse<int>> GetCustomerTotalNumberOfVisit(int UserId)
+        public async Task<ApiResponse<CustomerInfoDTO>> Login(string phoneNumber)
         {
-            ApiResponse<int> result = new ApiResponse<int>();
+            ApiResponse<CustomerInfoDTO> result = new ApiResponse<CustomerInfoDTO>();
 
             try
             {
-                Customer customer = await unitOfWork.CustomersManager.GetByIdAsync(UserId);
+                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(phoneNumber);
 
                 if (customer != null)
                 {
-                    result.Data = (int)customer.TotalNumberOfVisits;
+                    CustomerInfoDTO customerInfo = new CustomerInfoDTO();
+                    customerInfo.Id = customer.Id;
+                    customerInfo.Name = customer.Name;
+                    customerInfo.LastBarberId = customer.LastBarberId;
+                    customerInfo.LastVisitDate = customer.LastVisitDate;
+                    customerInfo.TotalNumberOfVisits = customer.TotalNumberOfVisits;
+                    customerInfo.PhoneNumber = customer.PhoneNumber;
+
+
+                    result.Data = customerInfo;
                     result.Succeeded = true;
                     return result;
                 }
                 result.Succeeded = false;
-                result.Errors.Add("It Is New Customer !");
+                result.Errors.Add("Customer already exists !");
                 result.ErrorType = ErrorType.LogicalError;
                 return result;
             }
@@ -50,43 +64,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
-
-        public async Task<ApiResponse<CustomerDetailsModelDTO>> GetCustomerVisitDetails(int UserId)
-        {
-            ApiResponse<CustomerDetailsModelDTO> result = new ApiResponse<CustomerDetailsModelDTO>();
-
-            try
-            {
-                Customer customer = await unitOfWork.CustomersManager.GetByIdAsync(UserId);
-
-                if (customer != null)
-                {
-                    CustomerDetailsModelDTO customerDetailsModelDTO = new CustomerDetailsModelDTO();
-                    customerDetailsModelDTO.Name = customer.Name;
-                    customerDetailsModelDTO.PhoneNumber = customer.PhoneNumber;
-                    customerDetailsModelDTO.TotalNumberOfVisit = (int)customer.TotalNumberOfVisits;
-                    customerDetailsModelDTO.dateVisitDate = (DateTime)customer.LastVisitDate;
-
-
-
-                    result.Data = customerDetailsModelDTO;
-                    result.Succeeded = true;
-                    return result;
-                }
-                result.Succeeded = false;
-                result.Errors.Add("It Is New Customer !");
-                result.ErrorType = ErrorType.LogicalError;
-                return result;
-            }
-            catch (Exception ex)
-            {
-                result.Succeeded = false;
-                result.Errors.Add(ex.Message);
-                return result;
-            }
-        }
-
         public async Task<ApiResponse<bool>> AddNewCustomer(AddCustomerModel model)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();
@@ -131,32 +108,22 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
-        public async Task<ApiResponse<CustomerInfoDTO>> Login(string phoneNumber)
+        public async Task<ApiResponse<int>> GetCustomerTotalNumberOfVisit(int UserId)
         {
-            ApiResponse<CustomerInfoDTO> result = new ApiResponse<CustomerInfoDTO>();
+            ApiResponse<int> result = new ApiResponse<int>();
 
             try
             {
-                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(phoneNumber);
+                Customer customer = await unitOfWork.CustomersManager.GetByIdAsync(UserId);
 
                 if (customer != null)
                 {
-                    CustomerInfoDTO customerInfo = new CustomerInfoDTO();
-                    customerInfo.Id = customer.Id;
-                    customerInfo.Name = customer.Name;
-                    customerInfo.LastBarberId = customer.LastBarberId;
-                    customerInfo.LastVisitDate = customer.LastVisitDate;
-                    customerInfo.TotalNumberOfVisits = customer.TotalNumberOfVisits;
-                    customerInfo.PhoneNumber = customer.PhoneNumber;
-
-
-                    result.Data = customerInfo;
+                    result.Data = (int)customer.TotalNumberOfVisits;
                     result.Succeeded = true;
                     return result;
                 }
                 result.Succeeded = false;
-                result.Errors.Add("Customer already exists !");
+                result.Errors.Add("It Is New Customer !");
                 result.ErrorType = ErrorType.LogicalError;
                 return result;
             }
@@ -167,7 +134,38 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<CustomerDTO>> GetCustomerVisitDetails(int CustomerId)
+        {
+            ApiResponse<CustomerDTO> result = new ApiResponse<CustomerDTO>();
 
+            try
+            {
+                
+                // CWO is Customer With there Orders 
+                var CWO = await unitOfWork.CustomersManager.GetAsync(b => b.Id == CustomerId, includeProperties: "CompleteOrders");
+                List<Customer> customer = CWO.ToList(); 
+                if (CWO != null)
+                {
+                     
+                    result.Data = mapper.Map<CustomerDTO>(customer[0]);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("There is NO Customer exist with This ID !");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
         public async Task<ApiResponse<int>> GetNumberOfCustomerVisitForToday(DateTime date)
         {
             ApiResponse<int> result = new ApiResponse<int>();
@@ -235,7 +233,7 @@ namespace TopSaloon.ServiceLayer
                     return result;
                 }
                 result.Succeeded = false;
-                result.Errors.Add("It Is New Customer !");
+                result.Errors.Add("No Total Time Calculated!");
                 result.ErrorType = ErrorType.LogicalError;
                 return result;
             }

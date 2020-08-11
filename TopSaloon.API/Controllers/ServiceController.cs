@@ -32,11 +32,11 @@ namespace TopSalon.API.Controllers
         {
             return await EditItemResponseHandler(async () => await service.EditService(model));
         }
-        //[HttpGet("getAllServices")]
-        //public async Task<IActionResult> GetAllServices()
-        //{
-        //     //return await GetResponseHandler(async () => await service.GetAllServices());
-        //}
+        [HttpGet("getAllServices")]
+        public async Task<IActionResult> GetAllServices()
+        {
+             return await GetResponseHandler(async () => await service.GetAllServices());
+        }
 
     }
 }

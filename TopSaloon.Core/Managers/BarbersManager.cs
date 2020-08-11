@@ -16,14 +16,31 @@ namespace TopSaloon.Core.Managers
 
         }
 
-        public async Task<List<Barber>> getallBarbers()
+        //public async Task<List<Barber>> getallBarbers()
+        //{
+        //    return await Task.Run(() =>
+        //    {
+        //        List<Barber> serviceFeedBackQuestions = context.Barbers.ToList();
+        //        return serviceFeedBackQuestions;
+        //    });
+        //}
+        public async Task<List<Barber>> GetAllAvailableBarber()
         {
             return await Task.Run(() =>
             {
-                List<Barber> serviceFeedBackQuestions = context.Barbers.ToList();
-                return serviceFeedBackQuestions;
+                  List<Barber> barbers = context.Barbers.Where(a=> a.Status== "Available").ToList();
+                   return barbers;
+                
             });
         }
+        public async Task<int> GetNumberOfAvailableBarber()
+        {
+            return await Task.Run(() =>
+            {
+                int CountOfBarber = context.Barbers.Where(a => a.Status == "Available").ToList().Count();
+                return CountOfBarber;
 
+            });
+        }
     }
 }
