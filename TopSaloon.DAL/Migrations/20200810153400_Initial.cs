@@ -49,6 +49,21 @@ namespace TopSaloon.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "BarberLogins",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LoginDateTime = table.Column<DateTime>(nullable: true),
+                    logoutDateTime = table.Column<DateTime>(nullable: true),
+                    NumberOfCompleteOrders = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BarberLogins", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Customers",
                 columns: table => new
                 {
@@ -56,7 +71,7 @@ namespace TopSaloon.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<string>(nullable: true),
-                    UniqueCode = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
                     LastBarberId = table.Column<int>(nullable: true),
                     LastVisitDate = table.Column<DateTime>(nullable: true),
                     TotalNumberOfVisits = table.Column<int>(nullable: true)
@@ -89,7 +104,7 @@ namespace TopSaloon.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<int>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
                     Price = table.Column<float>(nullable: true),
                     Time = table.Column<int>(nullable: true)
                 },
@@ -104,7 +119,7 @@ namespace TopSaloon.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<int>(nullable: true)
+                    Address = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -231,6 +246,32 @@ namespace TopSaloon.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CompleteOrders",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BarberId = table.Column<int>(nullable: false),
+                    OrderTotalAmount = table.Column<float>(nullable: true),
+                    CustomerWaitingTimeInMinutes = table.Column<int>(nullable: true),
+                    Status = table.Column<string>(nullable: true),
+                    OrderServicesList = table.Column<string>(nullable: true),
+                    OrderDateTime = table.Column<DateTime>(nullable: true),
+                    OrderFinishTime = table.Column<DateTime>(nullable: true),
+                    CustomerId = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompleteOrders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompleteOrders_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ServiceFeedBackQuestions",
                 columns: table => new
                 {
@@ -256,9 +297,8 @@ namespace TopSaloon.DAL.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(nullable: false),
-                    ShopsId = table.Column<int>(nullable: false),
-                    ShopId = table.Column<int>(nullable: true)
+                    UserId = table.Column<string>(nullable: true),
+                    ShopId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -268,7 +308,7 @@ namespace TopSaloon.DAL.Migrations
                         column: x => x.ShopId,
                         principalTable: "Shops",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -294,12 +334,34 @@ namespace TopSaloon.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrderFeedbacks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Comment = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: true),
+                    IsSubmitted = table.Column<bool>(nullable: true),
+                    CompleteOrderId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderFeedbacks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderFeedbacks_CompleteOrders_CompleteOrderId",
+                        column: x => x.CompleteOrderId,
+                        principalTable: "CompleteOrders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "BarberProfilePhotos",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Path = table.Column<int>(nullable: true),
+                    Path = table.Column<string>(nullable: true),
                     BarberId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
@@ -334,18 +396,40 @@ namespace TopSaloon.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrderFeedbackQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Question = table.Column<string>(nullable: true),
+                    Rating = table.Column<int>(nullable: true),
+                    OrderFeedbackId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderFeedbackQuestions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderFeedbackQuestions_OrderFeedbacks_OrderFeedbackId",
+                        column: x => x.OrderFeedbackId,
+                        principalTable: "OrderFeedbacks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     OrderTotal = table.Column<float>(nullable: true),
+                    FinishTime = table.Column<DateTime>(nullable: true),
                     WaitingTimeInMinutes = table.Column<int>(nullable: true),
+                    TotalServicesWaitingTime = table.Column<int>(nullable: true),
                     OrderIdentifier = table.Column<int>(nullable: true),
                     Status = table.Column<string>(nullable: true),
                     OrderDate = table.Column<DateTime>(nullable: true),
-                    BarberQueueId = table.Column<int>(nullable: false),
-                    CustomerId = table.Column<int>(nullable: false)
+                    BarberQueueId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -354,34 +438,6 @@ namespace TopSaloon.DAL.Migrations
                         name: "FK_Orders_BarberQueues_BarberQueueId",
                         column: x => x.BarberQueueId,
                         principalTable: "BarberQueues",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Orders_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderFeedbacks",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Comment = table.Column<string>(nullable: true),
-                    OrderId = table.Column<int>(nullable: false),
-                    Date = table.Column<DateTime>(nullable: true),
-                    IsSubmitted = table.Column<bool>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderFeedbacks", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderFeedbacks_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -405,27 +461,6 @@ namespace TopSaloon.DAL.Migrations
                         name: "FK_OrderServices_Orders_OrderId",
                         column: x => x.OrderId,
                         principalTable: "Orders",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "OrderFeedbackQuestions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Question = table.Column<string>(nullable: true),
-                    Rating = table.Column<int>(nullable: true),
-                    OrderFeedbackId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderFeedbackQuestions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_OrderFeedbackQuestions_OrderFeedbacks_OrderFeedbackId",
-                        column: x => x.OrderFeedbackId,
-                        principalTable: "OrderFeedbacks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -477,12 +512,14 @@ namespace TopSaloon.DAL.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_BarberProfilePhotos_BarberId",
                 table: "BarberProfilePhotos",
-                column: "BarberId");
+                column: "BarberId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_BarberQueues_BarberId",
                 table: "BarberQueues",
-                column: "BarberId");
+                column: "BarberId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Barbers_ShopId",
@@ -490,24 +527,25 @@ namespace TopSaloon.DAL.Migrations
                 column: "ShopId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CompleteOrders_CustomerId",
+                table: "CompleteOrders",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderFeedbackQuestions_OrderFeedbackId",
                 table: "OrderFeedbackQuestions",
                 column: "OrderFeedbackId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderFeedbacks_OrderId",
+                name: "IX_OrderFeedbacks_CompleteOrderId",
                 table: "OrderFeedbacks",
-                column: "OrderId");
+                column: "CompleteOrderId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_BarberQueueId",
                 table: "Orders",
                 column: "BarberQueueId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Orders_CustomerId",
-                table: "Orders",
-                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_OrderServices_OrderId",
@@ -541,6 +579,9 @@ namespace TopSaloon.DAL.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BarberLogins");
+
+            migrationBuilder.DropTable(
                 name: "BarberProfilePhotos");
 
             migrationBuilder.DropTable(
@@ -568,10 +609,13 @@ namespace TopSaloon.DAL.Migrations
                 name: "OrderFeedbacks");
 
             migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
                 name: "Services");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "CompleteOrders");
 
             migrationBuilder.DropTable(
                 name: "BarberQueues");

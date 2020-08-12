@@ -10,8 +10,8 @@ using TopSaloon.DAL;
 namespace TopSaloon.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200729105653_UpdatedAboutUsModel")]
-    partial class UpdatedAboutUsModel
+    [Migration("20200810155924_UpdatedCustomersModel")]
+    partial class UpdatedCustomersModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -269,6 +269,27 @@ namespace TopSaloon.DAL.Migrations
                     b.ToTable("Barbers");
                 });
 
+            modelBuilder.Entity("TopSaloon.Entities.Models.BarberLogin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("LoginDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("NumberOfCompleteOrders")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("logoutDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BarberLogins");
+                });
+
             modelBuilder.Entity("TopSaloon.Entities.Models.BarberProfilePhoto", b =>
                 {
                     b.Property<int>("Id")
@@ -284,7 +305,8 @@ namespace TopSaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BarberId");
+                    b.HasIndex("BarberId")
+                        .IsUnique();
 
                     b.ToTable("BarberProfilePhotos");
                 });
@@ -304,9 +326,48 @@ namespace TopSaloon.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BarberId");
+                    b.HasIndex("BarberId")
+                        .IsUnique();
 
                     b.ToTable("BarberQueues");
+                });
+
+            modelBuilder.Entity("TopSaloon.Entities.Models.CompleteOrder", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BarberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CustomerWaitingTimeInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("OrderDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("OrderFinishTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderServicesList")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float?>("OrderTotalAmount")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CompleteOrders");
                 });
 
             modelBuilder.Entity("TopSaloon.Entities.Models.Customer", b =>
@@ -315,6 +376,9 @@ namespace TopSaloon.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("LastBarberId")
                         .HasColumnType("int");
@@ -330,9 +394,6 @@ namespace TopSaloon.DAL.Migrations
 
                     b.Property<int?>("TotalNumberOfVisits")
                         .HasColumnType("int");
-
-                    b.Property<string>("UniqueCode")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -376,9 +437,6 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<int>("BarberQueueId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("FinishTime")
                         .HasColumnType("datetime2");
 
@@ -394,14 +452,15 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TotalServicesWaitingTime")
+                        .HasColumnType("int");
+
                     b.Property<int?>("WaitingTimeInMinutes")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BarberQueueId");
-
-                    b.HasIndex("CustomerId");
 
                     b.ToTable("Orders");
                 });
@@ -416,18 +475,18 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompleteOrderId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
                     b.Property<bool?>("IsSubmitted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
+                    b.HasIndex("CompleteOrderId")
                         .IsUnique();
 
                     b.ToTable("OrderFeedbacks");
@@ -507,8 +566,8 @@ namespace TopSaloon.DAL.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("Name")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float?>("Price")
                         .HasColumnType("real");
@@ -628,8 +687,8 @@ namespace TopSaloon.DAL.Migrations
             modelBuilder.Entity("TopSaloon.Entities.Models.BarberProfilePhoto", b =>
                 {
                     b.HasOne("TopSaloon.Entities.Models.Barber", "Barber")
-                        .WithMany("BarberProfilePhotos")
-                        .HasForeignKey("BarberId")
+                        .WithOne("BarberProfilePhoto")
+                        .HasForeignKey("TopSaloon.Entities.Models.BarberProfilePhoto", "BarberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -637,8 +696,17 @@ namespace TopSaloon.DAL.Migrations
             modelBuilder.Entity("TopSaloon.Entities.Models.BarberQueue", b =>
                 {
                     b.HasOne("TopSaloon.Entities.Models.Barber", "Barber")
-                        .WithMany("BarberQueues")
-                        .HasForeignKey("BarberId")
+                        .WithOne("BarberQueue")
+                        .HasForeignKey("TopSaloon.Entities.Models.BarberQueue", "BarberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TopSaloon.Entities.Models.CompleteOrder", b =>
+                {
+                    b.HasOne("TopSaloon.Entities.Models.Customer", "Customer")
+                        .WithMany("CompleteOrders")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -650,19 +718,13 @@ namespace TopSaloon.DAL.Migrations
                         .HasForeignKey("BarberQueueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("TopSaloon.Entities.Models.Customer", "Customer")
-                        .WithMany("Orders")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("TopSaloon.Entities.Models.OrderFeedback", b =>
                 {
-                    b.HasOne("TopSaloon.Entities.Models.Order", "Order")
+                    b.HasOne("TopSaloon.Entities.Models.CompleteOrder", "CompleteOrder")
                         .WithOne("OrderFeedback")
-                        .HasForeignKey("TopSaloon.Entities.Models.OrderFeedback", "OrderId")
+                        .HasForeignKey("TopSaloon.Entities.Models.OrderFeedback", "CompleteOrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

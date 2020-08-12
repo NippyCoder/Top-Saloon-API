@@ -19,16 +19,16 @@ namespace TopSaloon.API.Controllers
 
         }
 
-        [HttpGet("getAdministrator")]
-        public async Task<IActionResult> getAdminByid(int adminId)
-        {
-            return await GetResponseHandler(async () => await service.GetAdminByID(adminId));
-        }
-        [HttpPut("EditAdministrator")]
-        public async Task<IActionResult> EditAdminById(AdministratorDTO admin)
-        {
-            return await EditItemResponseHandler(async () => await service.EditAdminById(admin));
-        }
+        //[HttpGet("getAdministrator")]
+        //public async Task<IActionResult> getAdminByid(int adminId)
+        //{
+        //    return await GetResponseHandler(async () => await service.GetAdminByID(adminId));
+        //}
+        //[HttpPut("EditAdministrator")]
+        //public async Task<IActionResult> EditAdminById(AdministratorDTO admin)
+        //{
+        //    return await EditItemResponseHandler(async () => await service.EditAdminById(admin));
+        //}
 
     }
 }

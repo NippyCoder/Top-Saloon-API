@@ -294,7 +294,6 @@ namespace TopSaloon.ServiceLayer
                 {
                     orderToUpdate.Id = order.Id;
                     orderToUpdate.OrderDate = order.OrderDate;
-                    orderToUpdate.OrderFeedback = order.OrderFeedback;
                     orderToUpdate.OrderIdentifier = order.OrderIdentifier;
                     orderToUpdate.OrderServices = order.OrderServices;
                     orderToUpdate.OrderTotal = order.OrderTotal;

@@ -139,5 +139,31 @@ namespace TopSaloon.ServiceLayer
             }
             return result;
         }
+        public async Task<ApiResponse<List<ServiceDTO>>> GetAllServices()
+        {
+            ApiResponse<List<ServiceDTO>> result = new ApiResponse<List<ServiceDTO>>();
+            try
+            {
+               var services  = await unitOfWork.ServicesManager.GetAsync(b => b.Id !=null, 0, 0, null, includeProperties: "FeedBackQuestions");
+                if (services != null)
+                {
+                    result.Data = mapper.Map<List<ServiceDTO>>(services.ToList());
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to get list !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -13,6 +12,8 @@ using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
 using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
+using AutoMapper;
+
 
 namespace TopSaloon.ServiceLayer
 {
@@ -20,18 +21,23 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private readonly IMapper mapper;
 
-        public BarberService(UnitOfWork unitOfWork, IConfiguration config)
+
+        public BarberService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
+
+
         }
         public async Task<ApiResponse<int>> GetNumberOfAvailableBarbers()
         {
             ApiResponse<int> result = new ApiResponse<int>();
             try
             {
-                result.Data =  await unitOfWork.BarbersQueuesManager.GetAvilableBarber();
+                result.Data =  await unitOfWork.BarbersManager.GetNumberOfAvailableBarber();
 
                 result.Succeeded = true;
             }
@@ -69,24 +75,19 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<BaberModelDTO>> GetBarberDetailsReports(int BarberId)
+        public async Task<ApiResponse<BarberDTO>> GetBarberDetailsReports(int BarberId)
         {
-            ApiResponse<BaberModelDTO> result = new ApiResponse<BaberModelDTO>();
+            ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
             try
             {
-                Barber res = await unitOfWork.BarbersManager.GetByIdAsync(BarberId);
-                BaberModelDTO Temp = new BaberModelDTO();
+                var barber = await unitOfWork.BarbersManager.GetAsync(A=>A.Id==BarberId, includeProperties: "BarberQueue");
+                 List<Barber> barberData = barber.ToList();
 
-                if (res != null)
+                if (barber != null)
                 {
-                    Temp.Id = res.Id;
-                    Temp.Name = res.Name;
-                    Temp.Status = res.Status;
-                    Temp.NumberOfCustomerHandled = (int)res.NumberOfCustomersHandled;
-                    var res2 = await unitOfWork.BarbersQueuesManager.GetByIdAsync(res.Id);
-                    Temp.QueueStatus = res2.QueueStatus;
+                    result.Data = mapper.Map<BarberDTO>(barberData[0]);
                     result.Succeeded = true;
-                    result.Data = Temp;
+                   
 
                     return result;
                 }
@@ -109,17 +110,17 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                List<Barber> barbers = await unitOfWork.BarbersManager.getallBarbers();
+                List<Barber> barbers = await unitOfWork.BarbersManager.GetAllAvailableBarber();
 
                 if (barbers != null)
                 {
-                    result.Data = barbers.ToList();
+                    result.Data = barbers;
                     result.Succeeded = true;
                     return result;
                 }
                 else
                 {
-                    result.Errors.Add("Unable to get list !");
+                    result.Errors.Add("Unable to get any of barbers it!");
                     result.Succeeded = false;
                     return result;
                 }

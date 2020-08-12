@@ -14,10 +14,7 @@ namespace TopSaloon.DTOs.Models
         public string Status { get; set; }
         public DateTime? OrderDate { get; set; }
         public int BarberQueueId { get; set; }
-        public int CustomerId { get; set; }
         public virtual BarberQueueDTO BarberQueue { get; set; }
-        public virtual CustomerDTO Customer { get; set; }
-        public virtual OrderFeedbackDTO OrderFeedback { get; set; }
         public virtual List<OrderServiceDTO> OrderServices { get; set; }
     }
 }

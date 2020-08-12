@@ -11,7 +11,7 @@ namespace TopSaloon.Entities.Models
         public int? NumberOfCustomersHandled { get; set; }
         public int ShopId { get; set; }
         public virtual Shop Shop { get; set; }
-        public virtual List<BarberProfilePhoto> BarberProfilePhotos { get; set; }
-        public virtual List<BarberQueue> BarberQueues { get; set; }
+        public virtual BarberProfilePhoto BarberProfilePhoto { get; set; }
+        public virtual BarberQueue BarberQueue { get; set; }
     }
 }

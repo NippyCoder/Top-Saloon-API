@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TopSaloon.DTOs.Models
 {
-    public class SMSDTO
+    public class SmsDTO
     {
         public int Id { get; set; }
         public string Body { get; set; }
