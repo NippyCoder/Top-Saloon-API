@@ -97,6 +97,7 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+        //----------------------------- Cancel Order ----------------------------------------------//
         public async Task<ApiResponse<string>> CancelOrder(int orderId)
         {
             //Cancel Order: set order status to cancelled, pop order from corresponding queue.
@@ -135,6 +136,10 @@ namespace TopSaloon.ServiceLayer
                                     QueueToUpdate.Orders.Remove(QueueToUpdate.Orders[i]);
                                 }
                             }
+                            if(QueueToUpdate.Orders.Count == 0)
+                            {
+                                QueueToUpdate.QueueStatus = "idle";
+                            }
                             await unitOfWork.BarbersQueuesManager.UpdateAsync(QueueToUpdate);
                             var finalres = await unitOfWork.SaveChangesAsync();
                             if (finalres)
@@ -156,30 +161,6 @@ namespace TopSaloon.ServiceLayer
                             result.Errors.Add("Failed to fetch barber Queue !");
                             return result;
                         }                    
-                        //if (isUpdated_OrderService)
-                        //{
-                        //    var UpdateResult = await unitOfWork.SaveChangesAsync();
-                        //    if (UpdateResult)
-                        //    {
-                        //        result.Data = "Order cancelled successfully!";
-                        //        result.Succeeded = true;
-                        //        return result;
-                        //    }
-                        //    else
-                        //    {
-                        //        result.Data = "Error.";
-                        //        result.Errors.Add("Error Finalizing cancellation");
-                        //        result.Succeeded = false;
-                        //        return result;
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    result.Data = "Error.";
-                        //    result.Errors.Add("Error cancelling order service !");
-                        //    result.Succeeded = false;
-                        //    return result;
-                        //}
                     }
                     else
                     {
@@ -204,6 +185,14 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+
+        //--------------------------------- Finalize Order ------------------------------------------------//
+
+        //public async Task<ApiResponse<string>> FinalizeOrder(int orderId)
+        //{
+        //    ApiResponse<string> result = new ApiResponse<string>();
+        //    return result;
+        //}
     }
 }
 

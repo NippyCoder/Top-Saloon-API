@@ -82,12 +82,9 @@ namespace TopSaloon.ServiceLayer
         }
 
         //Barber Queue order addition
-
         public async Task<ApiResponse<bool>> AddOrderToQueue(OrderToAddDTO order, int QueueId)
         {
             var result = new ApiResponse<bool>();
-
-
             BarberQueue Queue = new BarberQueue();
             Order currentOrder = new Order();
             try
@@ -182,11 +179,6 @@ namespace TopSaloon.ServiceLayer
                             return result;
                         }
                     }
-                    //// Should be nested
-                    //if (BarberQueue.QueueStatus == "idle") // Empty queue
-                    //{
-
-                    //}
                 }
                 else
                 {
@@ -219,32 +211,49 @@ namespace TopSaloon.ServiceLayer
                     handler.QueueId = barberQueue.Id;
 
                     var queueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == handler.QueueId, 0,0,null, includeProperties: "OrderServices");
-                    
                     //Check for queue availability
                     if (queueOrders != null)
                     {
                         TimeSpan? CalculatedDateTime;
                         handler.Orders = mapper.Map<List<OrderDTO>>(queueOrders.ToList());
-                        for(int i=0; i<handler.Orders.Count; i++)
+                        if (handler.Orders.Count == 0)
                         {
-                            if (i == 0)
+                            handler.QueueEstimatedFinishTime = null;
+                            handler.QueueEstimatedWaitingTime = 0;
+                            handler.QueueId = QueueId;
+                            handler.Orders = null;
+                            result.Data = handler;
+                            result.Succeeded = true;
+                            return result;
+                        }
+                        else
+                        {
+                            for (int i = 0; i < handler.Orders.Count; i++)
                             {
-                                handler.QueueEstimatedFinishTime = handler.Orders[i].FinishTime;
+                                if (i == 0)
+                                {
+                                    handler.QueueEstimatedFinishTime = handler.Orders[i].FinishTime;
+                                    handler.QueueEstimatedWaitingTime = 0;
+                                }
+                                else
+                                {
+                                    handler.QueueEstimatedFinishTime = handler.QueueEstimatedFinishTime.Value.AddMinutes(Convert.ToDouble(handler.Orders[i].WaitingTimeInMinutes.Value));
+                                    CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[i].OrderDate);
+                                    handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
+                                    //Calculated DateTime: time difference between General estimate finish time and current order creation date.
+                                }
+
+                            }
+                            CalculatedDateTime = (handler.QueueEstimatedFinishTime - DateTime.Now);          
+                            handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
+                            if(handler.QueueEstimatedWaitingTime < 0)
+                            {
                                 handler.QueueEstimatedWaitingTime = 0;
                             }
-                            else
-                            {
-                                CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[i].OrderDate);
-                                //Waiting Time = previous order finish time - Order creation time
-                                handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
-                                handler.QueueEstimatedFinishTime = handler.QueueEstimatedFinishTime.Value.AddMinutes(Convert.ToDouble(handler.Orders[i].WaitingTimeInMinutes.Value));
-                                //Calculated DateTime: time difference between General estimate finish time and current order creation date.
-                            }
-                            
+                            result.Data = handler;
+                            result.Succeeded = true;
+                            return result;
                         }
-                        result.Data = handler;
-                        result.Succeeded = true;
-                        return result;                       
                     }
                     else
                     {

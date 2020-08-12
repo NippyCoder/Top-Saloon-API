@@ -27,7 +27,7 @@ namespace TopSaloon.Core.Managers
 
             return await Task.Run(() =>
             {
-                int Result = context.BarberQueues.Where(a => a.QueueStatus == "avaliable").Count();
+                int Result = context.BarberQueues.Where(a => a.QueueStatus == "available").Count();
 
                 return Result;
 
