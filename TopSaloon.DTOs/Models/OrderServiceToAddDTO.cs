@@ -7,11 +7,10 @@ namespace TopSaloon.DTOs.Models
 {
     public class OrderServiceToAddDTO
     {
-        public int Id { get; set; }
+        //ServiceID
         public string Name { get; set; }
         public float? Price { get; set; }
         public int? Time { get; set; }
         public bool? IsConfirmed { get; set; }
-        public int OrderId { get; set; }
     }
 }

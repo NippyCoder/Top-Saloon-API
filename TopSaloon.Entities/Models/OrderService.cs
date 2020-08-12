@@ -6,6 +6,7 @@ namespace TopSaloon.Entities.Models
     public partial class OrderService
     {
         public int Id { get; set; }
+       // public int ServiceId { get; set; }
         public string Name { get; set; }
         public float? Price { get; set; }
         public int? Time { get; set; }

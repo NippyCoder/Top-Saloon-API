@@ -37,9 +37,9 @@ namespace TopSaloon.API.Controllers
             return await GetResponseHandler(async () => await service.GetBarberQueueWaitingTime(QueueId));
         }
         [HttpPost("AddOrderToQueue")]
-        public async Task<IActionResult> AddOrderToQueue(OrderToAddDTO order, int QueueId)
+        public async Task<IActionResult> AddOrderToQueue(OrderToAddDTO order)
         {
-            return await AddItemResponseHandler(async () => await service.AddOrderToQueue(order, QueueId));
+            return await AddItemResponseHandler(async () => await service.AddOrderToQueue(order));
         }
     }
 }
