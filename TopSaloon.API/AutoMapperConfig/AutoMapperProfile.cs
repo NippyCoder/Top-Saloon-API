@@ -29,6 +29,8 @@ namespace TopSaloon.API.AutoMapperConfig
             CreateMap<ServiceFeedBackQuestion, ServiceFeedbackQuestionDTO>().ForMember(dest => dest.Service, opt => opt.Ignore()).ReverseMap();
             CreateMap<Shop, ShopDTO>().ReverseMap();
             CreateMap<SMS, SmsDTO>().ReverseMap();
+            CreateMap<OrderService, OrderServiceToAddDTO>().ReverseMap();
+
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using TopSaloon.DTOs.Models;
+using System.Text;
 
 namespace TopSaloon.DTOs.Models
 {
-    public partial class OrderDTO
+    public class OrderDTO
     {
         public int Id { get; set; }
         public float? OrderTotal { get; set; }
