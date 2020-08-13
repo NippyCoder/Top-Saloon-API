@@ -126,7 +126,7 @@ namespace TopSaloon.ServiceLayer
                         for (int i = 0; i < OrderToUpdate.OrderServices.Count; i++)
                         {
                             OrderToUpdate.OrderServices[i].IsConfirmed = false;
-                            OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].Id + ","; // orderservices[i].ServiceId
+                            OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].ServiceId + ","; // orderservices[i].ServiceId
                             isUpdated_OrderService = true;
                         }
                         var OrderUpdateResult = false;
@@ -255,7 +255,7 @@ namespace TopSaloon.ServiceLayer
                         for (int i = 0; i < OrderToUpdate.OrderServices.Count; i++)
                         {
                             OrderToUpdate.OrderServices[i].IsConfirmed = false;
-                            OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].Id + ","; // orderservices[i].ServiceId
+                            OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].ServiceId + ","; // orderservices[i].ServiceId
                             isUpdated_OrderService = true;
                         }
                         var OrderUpdateResult = false;
