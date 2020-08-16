@@ -1,19 +1,15 @@
 ﻿using System;
+using System.Linq.Expressions;
+using System.ComponentModel;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using TopSaloon.DAL;
 using TopSaloon.Entities;
 using TopSaloon.Entities.Models;
 using TopSaloon.Repository;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TopSaloon.DTOs.Enums;
-using System;
-using System.Linq.Expressions;
-using System.ComponentModel;
 using TopSaloon.DTOs.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
@@ -26,8 +22,6 @@ namespace TopSalon.Core.Managers
         {
 
         }
-
-
         public async Task<int> GetOrderByBarberQueue(int barberQueue)
         {
             int totalWaitingTime = 0;

@@ -25,6 +25,8 @@ namespace TopSaloon.API.Extensions
             caller.AddScoped<FeedbackService>();
             caller.AddScoped<ServiceService>();
             caller.AddScoped<QueueService>();
+            caller.AddScoped<OrdersService>();
+            caller.AddScoped<DailyReportService>();
         }
     }
     }

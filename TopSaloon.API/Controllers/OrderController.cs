@@ -31,11 +31,15 @@ namespace TopSaloon.API.Controllers
             return await EditItemResponseHandler(async () => await service.SetOrderService(orderServiceId));
         }
 
-        [HttpDelete("CancelOrder/{orderId}")]
-
-        public async Task<IActionResult> CancelOrder(int orderId)
+        [HttpPut("CancelOrder")]
+        public async Task<IActionResult> CancelOrder(int orderId, int customerId)
         {
-            return await EditItemResponseHandler(async () => await service.CancelOrder(orderId));
+            return await EditItemResponseHandler(async () => await service.CancelOrder(orderId, customerId));
+        }
+        [HttpPut("FinalizeOrder")]
+        public async Task <IActionResult> FinalizeOrder(int orderId, int customerId)
+        {
+            return await EditItemResponseHandler(async () => await service.FinalizeOrder(orderId, customerId));
         }
     }
 }

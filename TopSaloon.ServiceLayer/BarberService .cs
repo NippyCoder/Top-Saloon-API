@@ -103,6 +103,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        
         public async Task<ApiResponse<List<Barber>>> GetAllBarbers()
         {
             ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
@@ -120,6 +121,37 @@ namespace TopSaloon.ServiceLayer
                 else
                 {
                     result.Errors.Add("Unable to get any of barbers it!");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
+
+
+        public async Task<ApiResponse<List<Barber>>> GetAvailableBarbers()
+        {
+            ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
+
+            try
+            {
+                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available");
+
+                if (Barbers != null)
+                {
+                    result.Data = Barbers.ToList();
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to fetch barber list !");
                     result.Succeeded = false;
                     return result;
                 }

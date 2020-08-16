@@ -8,6 +8,7 @@ namespace TopSaloon.DTOs.Models
     {
         public int QueueId { get; set; }
         public DateTime? QueueEstimatedFinishTime { get; set; }
+        public double? QueueEstimatedWaitingTime { get; set; }
         public List <OrderDTO> Orders { get; set; }
     }
 }

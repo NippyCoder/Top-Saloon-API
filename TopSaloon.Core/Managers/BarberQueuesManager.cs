@@ -1,18 +1,14 @@
 ﻿using System;
+using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 using TopSaloon.DAL;
 using TopSaloon.Entities;
-using TopSaloon.Entities.Models;
 using TopSaloon.Repository;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TopSaloon.DTOs.Enums;
-using System;
-using System.Linq.Expressions;
+using TopSaloon.Entities.Models;
 
 namespace TopSaloon.Core.Managers
 {
@@ -27,7 +23,7 @@ namespace TopSaloon.Core.Managers
 
             return await Task.Run(() =>
             {
-                int Result = context.BarberQueues.Where(a => a.QueueStatus == "avaliable").Count();
+                int Result = context.BarberQueues.Where(a => a.QueueStatus == "available").Count();
 
                 return Result;  
                         
