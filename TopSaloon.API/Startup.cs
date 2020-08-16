@@ -35,11 +35,18 @@ namespace TopSaloon.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC12\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC20\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=A_12345;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=tcp:boltsql2020.database.windows.net,1433;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=boltadmin;Password=S3cur!ty;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC15\\SQLEXPRESS;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=sa;Password=password;"));
+
+            services.AddCors(options =>
+                options.AddDefaultPolicy(builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -49,11 +56,11 @@ namespace TopSaloon.API
 
             services.AddScoped<UnitOfWork>();
 
+            
+
             services.AddBusinessServices();
 
-            services.AddControllers();
-
-            services.AddSwaggerGen();
+            services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -68,13 +75,16 @@ namespace TopSaloon.API
 
             app.UseSwagger();
 
+            app.UseCors(policy => policy
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .WithOrigins("http://localhost:4200")
+           .AllowCredentials());
+
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
-
-
-            app.UseRouting();
 
             app.UseAuthorization();
 

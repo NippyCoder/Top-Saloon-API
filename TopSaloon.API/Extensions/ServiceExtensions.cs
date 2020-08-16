@@ -18,12 +18,10 @@ namespace TopSaloon.API.Extensions
             caller.AddScoped<AdministratorService>();
             caller.AddScoped<BarberService>();
             caller.AddScoped<FeedbackService>();
-            caller.AddScoped<UsersService>();
+        
             caller.AddScoped<BarberService>();
             caller.AddScoped<CustomerService>();
             caller.AddScoped<QuestionFeedbackService>();
-            caller.AddScoped<FeedbackService>();
-            caller.AddScoped<ServiceService>();
             caller.AddScoped<QueueService>();
             caller.AddScoped<OrdersService>();
             caller.AddScoped<DailyReportService>();
