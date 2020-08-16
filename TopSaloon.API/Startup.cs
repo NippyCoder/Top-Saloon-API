@@ -35,7 +35,7 @@ namespace TopSaloon.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC12\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC17\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=tcp:boltsql2020.database.windows.net,1433;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=boltadmin;Password=S3cur!ty;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
@@ -51,6 +51,12 @@ namespace TopSaloon.API
 
             services.AddBusinessServices();
 
+            services.AddCors(options =>
+                options.AddDefaultPolicy(builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()));
             services.AddControllers();
 
             services.AddSwaggerGen();
@@ -72,6 +78,12 @@ namespace TopSaloon.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            app.UseCors(policy => policy
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("http://localhost:4200")
+            .AllowCredentials());
 
 
             app.UseRouting();
