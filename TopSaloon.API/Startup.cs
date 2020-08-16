@@ -45,6 +45,14 @@ namespace TopSaloon.API
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddUserManager<ApplicationUserManager>();
 
+            services.AddCors(options =>
+               options.AddDefaultPolicy(builder =>
+                   builder.WithOrigins("http://localhost:4200")
+                   .AllowAnyMethod()
+                   .AllowAnyHeader()
+                   .AllowCredentials()));
+
+
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
             services.AddScoped<UnitOfWork>();
@@ -73,6 +81,11 @@ namespace TopSaloon.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
+            app.UseCors(policy => policy
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins()
+                .AllowCredentials());
 
             app.UseRouting();
 
