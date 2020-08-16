@@ -29,13 +29,13 @@ namespace TopSaloon.ServiceLayer
             this.config = config;
             this.mapper = mapper;
         }
-        public async Task<ApiResponse<CustomerInfoDTO>> Login(string phoneNumber)
+        public async Task<ApiResponse<CustomerInfoDTO>> Login(CustomerLoginDTO loginRequest)
         {
             ApiResponse<CustomerInfoDTO> result = new ApiResponse<CustomerInfoDTO>();
 
             try
             {
-                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(phoneNumber);
+                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(loginRequest.MobileNumber);
 
                 if (customer != null)
                 {
