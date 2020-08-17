@@ -135,17 +135,17 @@ namespace TopSaloon.ServiceLayer
         }
 
 
-        public async Task<ApiResponse<List<Barber>>> GetAvailableBarbers()
+        public async Task<ApiResponse<List<BarberDTO>>> GetAvailableBarbers()
         {
-            ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
+            ApiResponse<List<BarberDTO>> result = new ApiResponse<List<BarberDTO>>();
 
             try
             {
-                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available");
+                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto");
 
                 if (Barbers != null)
                 {
-                    result.Data = Barbers.ToList();
+                    result.Data = mapper.Map<List<BarberDTO>>(Barbers.ToList());
                     result.Succeeded = true;
                     return result;
                 }
