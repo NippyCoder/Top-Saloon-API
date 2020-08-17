@@ -25,9 +25,9 @@ namespace TopSaloon.API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(string phoneNumber)
+        public async Task<IActionResult> Login(CustomerLoginDTO loginRequest)
         {
-            return await AddItemResponseHandler(async () => await service.Login(phoneNumber));
+            return await AddItemResponseHandler(async () => await service.Login(loginRequest));
         }
 
         [HttpGet("GetCustomerTotalNumberOfVisit/{id}")]

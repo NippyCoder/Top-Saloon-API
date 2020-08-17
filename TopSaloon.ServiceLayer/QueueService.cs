@@ -1,18 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
-using TopSaloon.Core;
-using TopSaloon.DTOs;
-using TopSaloon.DTOs.Enums;
-using TopSaloon.DTOs.Models;
-using TopSaloon.Entities.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
+using TopSaloon.Core;
+using TopSaloon.DTOs;
+using TopSaloon.DTOs.Models;
+using TopSaloon.Entities.Models;
 
 namespace TopSaloon.ServiceLayer
 {
@@ -205,7 +200,7 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<QueueTimeHandlerModel>> GetBarberQueueWaitingTime(int QueueId)
+        public async Task<ApiResponse<QueueTimeHandlerModel>> SetBarberQueueWaitingTime(int QueueId)
         {
             //Return Barber Name, barber status, barber queue status, total waiting time (orders)
 
@@ -221,7 +216,9 @@ namespace TopSaloon.ServiceLayer
                     handler.QueueId = barberQueue.Id;
 
                     var queueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == handler.QueueId, 0,0,null, includeProperties: "OrderServices");
+
                     //Check for queue availability
+
                     if (queueOrders != null)
                     {
                         TimeSpan? CalculatedDateTime;
@@ -264,6 +261,9 @@ namespace TopSaloon.ServiceLayer
                             result.Succeeded = true;
                             return result;
                         }
+
+                        //end of else .
+
                     }
                     else
                     {
@@ -280,6 +280,107 @@ namespace TopSaloon.ServiceLayer
                 }
             }
             catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
+        public async Task<ApiResponse<bool>> SetQueueWaitingTimes()
+        {
+            var result = new ApiResponse<bool>();
+            try
+            {
+                var barberQueues = await unitOfWork.BarbersQueuesManager.GetAsync();
+                List<BarberQueue> barberQueuesList = barberQueues.ToList();
+                if(barberQueuesList != null)
+                {
+                    int countErrors = 0;
+
+                    for (int i = 0; i < barberQueuesList.Count; i++)
+                    {
+                        // Calculating waiting queue waiting time . 
+                        QueueTimeHandlerModel handler = new QueueTimeHandlerModel();
+                        handler.QueueId = barberQueuesList[i].Id;
+                        var queueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == handler.QueueId, 0, 0, null, includeProperties: "OrderServices");
+                        if (queueOrders != null)
+                        {
+                            BarberQueue barberQueueToUpdate = await unitOfWork.BarbersQueuesManager.GetByIdAsync(barberQueuesList[i].Id);
+                            TimeSpan? CalculatedDateTime;
+                            handler.Orders = mapper.Map<List<OrderDTO>>(queueOrders.ToList());
+
+                            if (handler.Orders.Count == 0)
+                            {
+                                handler.QueueEstimatedFinishTime = null;
+                                handler.QueueEstimatedWaitingTime = 0;
+                                barberQueueToUpdate.QueueWaitingTime = 0;
+                            }
+                            else
+                            {
+                                for (int y = 0; y < handler.Orders.Count; y++)
+                                {
+                                    if (y == 0)
+                                    {
+                                        handler.QueueEstimatedFinishTime = handler.Orders[y].FinishTime;
+                                        handler.QueueEstimatedWaitingTime = 0;
+                                        barberQueueToUpdate.QueueWaitingTime = 0;
+                                    }
+                                    else
+                                    {
+                                        handler.QueueEstimatedFinishTime = handler.QueueEstimatedFinishTime.Value.AddMinutes(Convert.ToDouble(handler.Orders[y].WaitingTimeInMinutes.Value));
+                                        CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[y].OrderDate);
+                                        handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
+                                        barberQueueToUpdate.QueueWaitingTime = Int32.Parse(CalculatedDateTime.Value.TotalMinutes.ToString());
+                                        //Calculated DateTime: time difference between General estimate finish time and current order creation date.
+                                    }
+                                }
+                                CalculatedDateTime = (handler.QueueEstimatedFinishTime - DateTime.Now);
+                                handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
+                                barberQueueToUpdate.QueueWaitingTime = Int32.Parse(CalculatedDateTime.Value.TotalMinutes.ToString());
+                                if (barberQueueToUpdate.QueueWaitingTime < 0)
+                                {
+                                    barberQueueToUpdate.QueueWaitingTime = 0;
+                                }
+                            }
+
+                            var res = await  unitOfWork.SaveChangesAsync();
+
+                            if(res != true)
+                            {
+                             countErrors++;
+                            }
+                        }
+                        else
+                        {
+                            countErrors++;
+                        } 
+                        //End of calculating queue waiting time .
+                     }
+                    
+                    if(countErrors > 0 )
+                    {
+                            result.Succeeded = false;
+                            result.Errors.Add("Error fetching Barber Queues!");
+                            return result;
+                     }
+                    else
+                    {
+                        result.Data = true;
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    
+
+                }//End OF MAIN IF  . 
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Error fetching Barber Queues!");
+                    return result;
+                }
+            }
+            catch(Exception ex)
             {
                 result.Succeeded = false;
                 result.Errors.Add(ex.Message);

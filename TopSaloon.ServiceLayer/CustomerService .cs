@@ -29,13 +29,13 @@ namespace TopSaloon.ServiceLayer
             this.config = config;
             this.mapper = mapper;
         }
-        public async Task<ApiResponse<CustomerInfoDTO>> Login(string phoneNumber)
+        public async Task<ApiResponse<CustomerInfoDTO>> Login(CustomerLoginDTO loginRequest)
         {
             ApiResponse<CustomerInfoDTO> result = new ApiResponse<CustomerInfoDTO>();
 
             try
             {
-                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(phoneNumber);
+                Customer customer = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(loginRequest.MobileNumber);
 
                 if (customer != null)
                 {
@@ -64,9 +64,9 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<bool>> AddNewCustomer(AddCustomerModel model)
+        public async Task<ApiResponse<CustomerDTO>> AddNewCustomer(AddCustomerModel model)
         {
-            ApiResponse<bool> result = new ApiResponse<bool>();
+            ApiResponse<CustomerDTO> result = new ApiResponse<CustomerDTO>();
             try
             {
                 Customer newCustomer = new Customer();
@@ -78,13 +78,13 @@ namespace TopSaloon.ServiceLayer
 
                 if (customerResult == null)
                 {
-                    var createCustomerResult = await unitOfWork.CustomersManager.CreateAsync(newCustomer);
+                    Customer createCustomerResult = await unitOfWork.CustomersManager.CreateAsync(newCustomer);
 
                     await unitOfWork.SaveChangesAsync();
 
                     if (createCustomerResult != null)
                     {
-                        result.Data = true;
+                        result.Data = mapper.Map<CustomerDTO>(createCustomerResult); ;
                         result.Succeeded = true;
                         return result;
                     }
