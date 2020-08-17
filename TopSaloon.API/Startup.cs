@@ -46,12 +46,11 @@ namespace TopSaloon.API
                 .AddUserManager<ApplicationUserManager>();
 
             services.AddCors(options =>
-               options.AddDefaultPolicy(builder =>
-                   builder.WithOrigins("http://localhost:4200")
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .AllowCredentials()));
-
+                options.AddDefaultPolicy(builder =>
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials()));
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -82,10 +81,10 @@ namespace TopSaloon.API
             });
 
             app.UseCors(policy => policy
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .WithOrigins("http://localhost:4200")
-                .AllowCredentials());
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .WithOrigins("http://localhost:4200")
+            .AllowCredentials());
 
             app.UseRouting();
 

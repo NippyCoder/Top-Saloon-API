@@ -248,6 +248,20 @@ namespace TopSaloon.Core
             }
         }
 
+        private GuestNumberManager guestNumberManager;
+        public GuestNumberManager GuestNumberManager
+        {
+            get
+            {
+                if (guestNumberManager == null)
+                {
+                    guestNumberManager = new GuestNumberManager(context);
+                }
+                return guestNumberManager;
+            }
+        }
+
+
     }
     
 }
