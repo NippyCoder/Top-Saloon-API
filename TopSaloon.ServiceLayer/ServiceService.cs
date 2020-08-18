@@ -35,10 +35,11 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 Service newService = new Service();
-                newService.Name = model.Name;
+                newService.NameAR = model.NameAR;
+                newService.NameEN = model.NameEN;
                 newService.Time = model.Time;
                 newService.Price = model.Price;
-                Service ServiceResult = await unitOfWork.ServicesManager.GetServiceByName(model.Name);
+                Service ServiceResult = await unitOfWork.ServicesManager.GetServiceByName(model.NameAR);
                 if (ServiceResult == null)
                 {
                     var createServiceResult = await unitOfWork.ServicesManager.CreateAsync(newService);
@@ -106,30 +107,47 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<bool>> EditService( ServiceModelDTO model)
+        public async Task<ApiResponse<ServiceDTO>> EditService( ServiceModelDTO model)
         {
-            ApiResponse<bool> result = new ApiResponse<bool>();
+            ApiResponse<ServiceDTO> result = new ApiResponse<ServiceDTO>();
             try
             {
                 var service = await unitOfWork.ServicesManager.GetByIdAsync(model.Id);
-                Service serv = await unitOfWork.ServicesManager.GetServiceByName(model.Name);
+                Service serv = await unitOfWork.ServicesManager.GetServiceByName(model.NameEN);
+
                 if (serv == null)
                 {
-                    service.Name = model.Name;
+                    service.NameAR = model.NameAR;
+                    service.NameEN = model.NameEN;
+                    service.Price = model.Price;
+                    service.Time = model.Time;
+
+                    await unitOfWork.ServicesManager.UpdateAsync(service);
+
+                    var res = await unitOfWork.SaveChangesAsync();
+
+                    if(res == true)
+                    {
+                        result.Data = mapper.Map<ServiceDTO>(service);
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Error updating service !");
+                        result.ErrorType = ErrorType.LogicalError;
+                        return result;
+                    }
                 }
-                service.Price = model.Price;
-                service.Time = model.Time;
-                var res = await unitOfWork.SaveChangesAsync();
-                if (res)
+                else
                 {
-                    result.Data = true;
-                    result.Succeeded = true;
+                    result.Succeeded = false;
+                    result.Errors.Add("A service with a similar name alreadyd exists !");
+                    result.ErrorType = ErrorType.LogicalError;
                     return result;
                 }
-                result.Succeeded = false;
-                result.Errors.Add("Failed to edit Service !");
-                result.ErrorType = ErrorType.LogicalError;
-                return result;
+                    
             }
             catch (Exception ex)
             {
@@ -139,6 +157,7 @@ namespace TopSaloon.ServiceLayer
             }
             return result;
         }
+
         public async Task<ApiResponse<List<ServiceDTO>>> GetAllServices()
         {
             ApiResponse<List<ServiceDTO>> result = new ApiResponse<List<ServiceDTO>>();

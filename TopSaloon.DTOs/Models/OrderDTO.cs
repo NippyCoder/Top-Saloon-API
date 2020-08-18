@@ -7,9 +7,12 @@ namespace TopSaloon.DTOs.Models
     public class OrderDTO
     {
         public int Id { get; set; }
+        public int CustomerId { get; set; }
+        public int CustomerName { get; set; }
         public float? OrderTotal { get; set; }
         public DateTime? FinishTime { get; set; }
         public int? WaitingTimeInMinutes { get; set; }
+        public int? TotalServicesWaitingTime { get; set; }
         public int? OrderIdentifier { get; set; }
         public string Status { get; set; }
         public DateTime? OrderDate { get; set; }

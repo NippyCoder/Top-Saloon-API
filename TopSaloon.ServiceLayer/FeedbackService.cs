@@ -35,7 +35,8 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 ServiceFeedBackQuestion serviceFeedBackQuestionToAdd = new ServiceFeedBackQuestion();
-                serviceFeedBackQuestionToAdd.Question = questionToAdd.Question;
+                serviceFeedBackQuestionToAdd.QuestionAR = questionToAdd.QuestionAR;
+                serviceFeedBackQuestionToAdd.QuestionEN = questionToAdd.QuestionEN;
                 serviceFeedBackQuestionToAdd.ServiceId = questionToAdd.ServiceId;
                 serviceFeedBackQuestionToAdd = await unitOfWork.ServiceFeedBackQuestionsManager.CreateAsync(serviceFeedBackQuestionToAdd);
 
@@ -108,20 +109,22 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<bool>> EditServiceFeedbackQuestion(EditServiceFeedbackQuestionDTO questionToEdit)
+        public async Task<ApiResponse<ServiceFeedbackQuestionDTO>> EditServiceFeedbackQuestion(EditServiceFeedbackQuestionDTO questionToEdit)
         {
-            ApiResponse<bool> result = new ApiResponse<bool>();
+            ApiResponse<ServiceFeedbackQuestionDTO> result = new ApiResponse<ServiceFeedbackQuestionDTO>();
             try
             {
                 var serviceFeedbackQuestionToEdit = await unitOfWork.ServiceFeedBackQuestionsManager.GetByIdAsync(questionToEdit.Id);
 
                 if (serviceFeedbackQuestionToEdit != null)
                 {
-                    serviceFeedbackQuestionToEdit.Question = questionToEdit.Question;
+                    serviceFeedbackQuestionToEdit.QuestionAR = questionToEdit.QuestionAR;
+                    serviceFeedbackQuestionToEdit.QuestionEN = questionToEdit.QuestionEN;
+
                     var res2 = await unitOfWork.SaveChangesAsync();
                     if (res2 == true)
                     {
-                        result.Data = true;
+                        result.Data = mapper.Map<ServiceFeedbackQuestionDTO>(serviceFeedbackQuestionToEdit);
                         result.Succeeded = true;
                         return result;
                     }

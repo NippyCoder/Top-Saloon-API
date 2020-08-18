@@ -8,7 +8,8 @@ namespace TopSaloon.DTOs.Models
     {
 
       public int ServiceId { get; set; }
-      public string Question { get; set; }
+      public string QuestionAR { get; set; }
+      public string QuestionEN { get; set; }
 
     }
 }

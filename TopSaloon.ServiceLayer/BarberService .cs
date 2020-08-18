@@ -23,7 +23,6 @@ namespace TopSaloon.ServiceLayer
         private readonly IConfiguration config;
         private readonly IMapper mapper;
 
-
         public BarberService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
@@ -74,7 +73,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
         public async Task<ApiResponse<BarberDTO>> GetBarberDetailsReports(int BarberId)
         {
             ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
@@ -103,7 +101,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        
         public async Task<ApiResponse<List<Barber>>> GetAllBarbers()
         {
             ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
@@ -133,8 +130,6 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-
-
         public async Task<ApiResponse<List<BarberDTO>>> GetAvailableBarbers()
         {
             ApiResponse<List<BarberDTO>> result = new ApiResponse<List<BarberDTO>>();
