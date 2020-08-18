@@ -6,7 +6,8 @@ namespace TopSaloon.Entities.Models
     public partial class Barber
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string NameAR { get; set; }
+        public string NameEN { get; set; }
         public string Status { get; set; }
         public int? NumberOfCustomersHandled { get; set; }
         public int ShopId { get; set; }

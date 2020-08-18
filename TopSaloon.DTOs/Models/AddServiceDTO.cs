@@ -5,7 +5,8 @@ namespace TopSaloon.DTOs.Models
 {
     public class AddServiceDTO
     {
-        public string Name { get; set; }
+        public string NameAR { get; set; }
+        public string NameEN { get; set; }
         public int Time { get; set; }
         public float Price { get; set; }
     }

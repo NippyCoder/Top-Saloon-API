@@ -15,19 +15,19 @@ namespace TopSaloon.Core.Managers
         {
 
         }
-        public async Task<Service> GetServiceByName(string Name)
+        public async Task<Service> GetServiceByName(string NameEN)
         {
             return await Task.Run(() =>
             {
-                var service = context.Services.Where(a => a.Name == Name).FirstOrDefault();
+                var service = context.Services.Where(a => a.NameEN == NameEN).FirstOrDefault();
                 return service;
             });
         }
-        public async Task<int> GetServiceByNameCount(string Name)
+        public async Task<int> GetServiceByNameCount(string NameEN)
         {
             return await Task.Run(() =>
             {
-                int service = context.Services.Where(a => a.Name == Name).Count();
+                int service = context.Services.Where(a => a.NameEN == NameEN).Count();
                 return service;
             });
         }
