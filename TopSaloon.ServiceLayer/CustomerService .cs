@@ -244,8 +244,65 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<CustomerInfoDTO>> GuestLogin()
+        {
+            ApiResponse<CustomerInfoDTO> result = new ApiResponse<CustomerInfoDTO>();
 
+            try
+            {
 
+                var currentGuestNumberResult = await unitOfWork.GuestNumberManager.GetAsync();
+
+                List<GuestNumber> currentGuestNumberList = currentGuestNumberResult.ToList();
+
+                GuestNumber currentGuestNumber = currentGuestNumberList[0];
+
+                Customer customer = new Customer();
+
+                customer.Name = "Guest " + currentGuestNumber.CurrentGuestNumber.ToString();
+
+                customer.LastVisitDate = DateTime.Now;
+
+                customer.PhoneNumber = "00000000";
+
+                customer.Email = "Guest";
+
+                var customerResult = await unitOfWork.CustomersManager.CreateAsync(customer);
+
+                var guestNumberUpdateResult = await unitOfWork.GuestNumberManager.GetByIdAsync(currentGuestNumber.Id);
+
+                guestNumberUpdateResult.CurrentGuestNumber++;
+
+                var res = await unitOfWork.SaveChangesAsync();
+
+                CustomerInfoDTO customerInfoToReturn = new CustomerInfoDTO();
+
+                customerInfoToReturn.Id = customer.Id;
+                customerInfoToReturn.Name = customer.Name;
+                customerInfoToReturn.LastVisitDate = customer.LastVisitDate;
+
+                if (res == true)
+                {
+                    result.Data = customerInfoToReturn;
+                    result.Data.Name = customerResult.Name;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Failed to login as guest !");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
     }
 }
 

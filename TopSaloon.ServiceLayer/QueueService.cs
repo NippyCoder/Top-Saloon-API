@@ -43,13 +43,12 @@ namespace TopSaloon.ServiceLayer
                     Queue.QueueStatus = BarberQueue.QueueStatus;
                     
                     var Barber = await unitOfWork.BarbersManager.GetByIdAsync(barberId);
+
                     if (Barber != null)
                     {
-                        Queue.Barber.Name = Barber.Name;
+                        Queue.Barber.NameEN = Barber.NameEN;
+                        Queue.Barber.NameAR = Barber.NameAR;
                         Queue.Barber.Status = Barber.Status;
-                        var QueueTotalTime = await unitOfWork.OrdersManager.GetOrderByBarberQueue(Queue.Id);
-                       // Queue. = QueueTotalTime;
-
                         result.Data = Queue;
                         result.Succeeded = true;
                         return result;
