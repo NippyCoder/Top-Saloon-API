@@ -35,12 +35,13 @@ namespace TopSaloon.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC15\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssword;"));
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC12\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=tcp:boltsql2020.database.windows.net,1433;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=boltadmin;Password=S3cur!ty;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC15\\SQLEXPRESS;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=sa;Password=password;"));
 
+            //            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC12\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddUserManager<ApplicationUserManager>();
