@@ -52,15 +52,16 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<int>> GetTotalNumberCustomerForToday(DateTime today)
+        public async Task<ApiResponse<int>> GetTotalNumberCustomerForToday()
         {
-
+            
             ApiResponse<int> result = new ApiResponse<int>();
 
             try
             {
                 //complete order object
-                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A=>A.OrderDateTime==today);
+                var myday = DateTime.Today;
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A=>A.OrderDateTime.Value.Date >= myday );
                 if (CO != null)
                 {
                     result.Data = CO.Count();
@@ -83,7 +84,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<int>> GetTotalServiceCostForToday(DateTime today)
+        public async Task<ApiResponse<int>> GetTotalServiceCostForToday( )
         {
 
             ApiResponse<int> result = new ApiResponse<int>();
@@ -91,7 +92,8 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 //complete order object
-                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime == today);
+                var myday = DateTime.Today;
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime.Value.Date >= myday);
                 if (CO != null)
                 {
                     int total = 0;
@@ -120,7 +122,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<float>> GetAverageOfWaitingTimeForToday(DateTime today)
+        public async Task<ApiResponse<float>> GetAverageOfWaitingTimeForToday( )
         {
 
             ApiResponse<float> result = new ApiResponse<float>();
@@ -128,7 +130,9 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 //complete order object
-                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime == today);
+                var myday = DateTime.Today;
+
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime.Value.Date >= myday);
                 if (CO != null)
                 {
                     var COList = CO.ToList();
@@ -159,7 +163,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<int>> GetNumberOfSignedInBarbersForToday(DateTime today)
+        public async Task<ApiResponse<int>> GetNumberOfSignedInBarbersForToday( )
         {
 
             ApiResponse<int> result = new ApiResponse<int>();
@@ -167,7 +171,9 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 //complete order object
-                var CO = await unitOfWork.DailyReportsManager.GetSigndInbarbers(today);
+                var myday = DateTime.Today;
+
+                var CO = await unitOfWork.DailyReportsManager.GetSigndInbarbers();
 
                 if (CO != 0)
                 {
