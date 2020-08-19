@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace TopSaloon.ServiceLayer
 {
@@ -17,11 +18,13 @@ namespace TopSaloon.ServiceLayer
     {
         private readonly UnitOfWork unitOfWork;
         private readonly IConfiguration config;
+        private IMapper mapper;
 
-        public OrdersService(UnitOfWork unitOfWork, IConfiguration config)
+        public OrdersService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.config = config;
+            this.mapper = mapper;
         }
 
         public async Task<ApiResponse<List<OrderService>>> GetOrderServicesViaOrderId(int orderId)
@@ -53,6 +56,36 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+
+        public async Task<ApiResponse<CompleteOrderDTO>> GetCompleteOrderById(int id)
+        {
+
+            ApiResponse<CompleteOrderDTO> result = new ApiResponse<CompleteOrderDTO>();
+
+            try
+            {
+                var completeOrder = await unitOfWork.CompleteOrdersManager.GetByIdAsync(id);
+
+                if (completeOrder != null)
+                {
+                    result.Data = mapper.Map<CompleteOrderDTO>(completeOrder);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to retreive complete order !");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
 
 
         public async Task<ApiResponse<bool>> SetOrderService(int orderId)

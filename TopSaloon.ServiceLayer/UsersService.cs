@@ -287,6 +287,53 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
+        public async Task<ApiResponse<AdminCreationModel>> getAdminById(int adminId)
+        {
+            ApiResponse<AdminCreationModel> result = new ApiResponse<AdminCreationModel>();
+            try
+            {
+                Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync(adminId);
+                if (adminValue != null)
+                {
+                    var adminData = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
+                    if (adminData != null)
+                    {
+                        AdministratorDTO adminDto = new AdministratorDTO();
+                        adminDto.Id = adminValue.Id;
+                        adminDto.UserId = adminValue.UserId;
+                        adminDto.ShopId = adminValue.ShopId;
+                        AdminCreationModel adminModel = new AdminCreationModel();
+                        adminModel.FirstName = adminData.FirstName;
+                        adminModel.LastName = adminData.LastName;
+                        adminModel.Email = adminData.Email;
+                        adminModel.PhoneNumber = adminData.PhoneNumber;
+                        adminModel.Password = adminData.PasswordHash;
+                        result.Data = adminModel;
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("User not found");
+                        return result;
+                    }
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Invalid input value");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
 
     }
 }
