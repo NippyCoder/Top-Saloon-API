@@ -22,7 +22,6 @@ namespace TopSaloon.ServiceLayer
         private readonly IConfiguration config;
         private readonly IMapper mapper;
 
-
         public CustomerService(UnitOfWork unitOfWork, IConfiguration config, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
@@ -303,6 +302,69 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<List<CustomerDTO>>> GetAllCustomers()
+        {
+            ApiResponse<List<CustomerDTO>> result = new ApiResponse<List<CustomerDTO>>();
+
+            try
+            {
+                var customerList = await unitOfWork.CustomersManager.GetAsync();
+
+                List<Customer> customerListToReturn = customerList.ToList();
+
+
+                if (customerListToReturn != null)
+                {
+                    result.Data = mapper.Map<List<CustomerDTO>>(customerListToReturn);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to retreive customers list !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
+        public async Task<ApiResponse<CustomerDTO>> GetCustomerById(int CustomerId)
+        {
+            ApiResponse<CustomerDTO> result = new ApiResponse<CustomerDTO>();
+
+            try
+            {
+                var customer = await unitOfWork.CustomersManager.GetByIdAsync(CustomerId);
+
+            
+                if (customer != null)
+                {
+                    result.Data = mapper.Map<CustomerDTO>(customer);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to find customer with the referenced id !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
+
     }
 }
 

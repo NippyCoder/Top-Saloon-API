@@ -20,7 +20,7 @@ namespace TopSaloon.API.Controllers
 
         }
 
-        [HttpGet("getAllBarbers")]
+        [HttpGet("GetAllBarbers")]
         public async Task<IActionResult> GetAllBarbers()
         {
             return await GetResponseHandler(async () => await service.GetAllBarbers());

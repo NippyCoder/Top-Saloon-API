@@ -101,23 +101,26 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-        public async Task<ApiResponse<List<Barber>>> GetAllBarbers()
+        public async Task<ApiResponse<List<BarberDTO>>> GetAllBarbers()
         {
-            ApiResponse<List<Barber>> result = new ApiResponse<List<Barber>>();
+            ApiResponse<List<BarberDTO>> result = new ApiResponse<List<BarberDTO>>();
 
             try
             {
-                List<Barber> barbers = await unitOfWork.BarbersManager.GetAllAvailableBarber();
+                var barbersList = await unitOfWork.BarbersManager.GetAsync();
 
-                if (barbers != null)
+                List<Barber> barberListToReturn = barbersList.ToList();
+
+
+                if (barberListToReturn != null)
                 {
-                    result.Data = barbers;
+                    result.Data = mapper.Map<List<BarberDTO>>(barberListToReturn);
                     result.Succeeded = true;
                     return result;
                 }
                 else
                 {
-                    result.Errors.Add("Unable to get any of barbers it!");
+                    result.Errors.Add("Unable to retreive barbers list !");
                     result.Succeeded = false;
                     return result;
                 }
@@ -136,7 +139,7 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto");
+                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto,BarberQueue");
 
                 if (Barbers != null)
                 {
