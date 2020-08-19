@@ -18,14 +18,20 @@ namespace TopSaloon.API.Controllers
 
         }
 
-        [HttpGet("GetOrderServices/{orderId}")]
-        public async Task<IActionResult> GetOrderServicesViaOrderId(int orderId)
+        [HttpGet("GetOrderServices/{id}")]
+        public async Task<IActionResult> GetOrderServicesViaOrderId(int id)
         {
-            return await GetResponseHandler(async () => await service.GetOrderServicesViaOrderId(orderId));
+            return await GetResponseHandler(async () => await service.GetOrderServicesViaOrderId(id));
         }
 
-        [HttpPut("SetOrderService")]
+        [HttpGet("GetCompleteOrderById/{id}")]
+        public async Task<IActionResult> GetCompleteOrderById(int id)
+        {
+            return await GetResponseHandler(async () => await service.GetCompleteOrderById(id));
+        }
 
+
+        [HttpPut("SetOrderService")]
         public async Task<IActionResult> SetOrderService(int orderServiceId)
         {
             return await EditItemResponseHandler(async () => await service.SetOrderService(orderServiceId));

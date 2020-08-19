@@ -178,7 +178,7 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<OrderFeedbackDTO>> GetOrderFeedbackQuestionsById(int Id)
+        public async Task<ApiResponse<OrderFeedbackDTO>> GetOrderFeedbackQuestionsByOrderId(int Id)
         {
             ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
             try
@@ -195,7 +195,7 @@ namespace TopSaloon.ServiceLayer
                 else
                 {
                     result.Succeeded = false;
-                    result.Errors.Add("Unable to find service feedback question !");
+                    result.Errors.Add("Unable to find order feedback question !");
                     return result;
                 }
                 //End of try . 

@@ -52,6 +52,148 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<int>> GetTotalNumberCustomerForToday(DateTime today)
+        {
+
+            ApiResponse<int> result = new ApiResponse<int>();
+
+            try
+            {
+                //complete order object
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A=>A.OrderDateTime==today);
+                if (CO != null)
+                {
+                    result.Data = CO.Count();
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Could not Find Any Complete order");
+                    return result;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<int>> GetTotalServiceCostForToday(DateTime today)
+        {
+
+            ApiResponse<int> result = new ApiResponse<int>();
+
+            try
+            {
+                //complete order object
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime == today);
+                if (CO != null)
+                {
+                    int total = 0;
+                    var COList = CO.ToList(); 
+                    for (int i = 0; i < CO.Count(); i++)
+                    {
+                        total +=(int)COList[i].OrderTotalAmount;  
+                    }
+                    result.Data = total;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Could not Find Any Complete order");
+                    return result;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<float>> GetAverageOfWaitingTimeForToday(DateTime today)
+        {
+
+            ApiResponse<float> result = new ApiResponse<float>();
+
+            try
+            {
+                //complete order object
+                var CO = await unitOfWork.CompleteOrdersManager.GetAsync(A => A.OrderDateTime == today);
+                if (CO != null)
+                {
+                    var COList = CO.ToList();
+                    float total = 0;
+                   
+                    for (int i = 0; i < CO.Count(); i++)
+                    {
+                        total += (float) COList[i].CustomerWaitingTimeInMinutes;
+                    }
+                    total = total / COList.Count(); 
+                    result.Data = total;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Could not Find Any Complete order");
+                    return result;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<int>> GetNumberOfSignedInBarbersForToday(DateTime today)
+        {
+
+            ApiResponse<int> result = new ApiResponse<int>();
+
+            try
+            {
+                //complete order object
+                var CO = await unitOfWork.DailyReportsManager.GetSigndInbarbers(today);
+
+                if (CO != 0)
+                {
+                   
+                    result.Data = CO;
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Could not Find Any Complete order");
+                    return result;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
+
     }
 }
 
