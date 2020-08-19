@@ -15,8 +15,10 @@ namespace TopSaloon.Entities.Models
         public string OrderServicesList { get; set; }
         public DateTime? OrderDateTime { get; set; }
         public DateTime? OrderFinishTime { get; set; }
-        public string CustomerName { get; set; }
-        public string BarberName { get; set; }
+        public string CustomerNameAR { get; set; }
+        public string CustomerNameEN { get; set; }
+        public string BarberNameAR { get; set; }
+        public string BarberNameEN { get; set; }
         public int CustomerId { get; set; }
         public Customer Customer { get; set; }
         public OrderFeedback OrderFeedback { get; set; }

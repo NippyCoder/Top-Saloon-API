@@ -54,5 +54,13 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetUserDailyEarningPerTime(Start , End));
         }
+
+        [HttpGet("getAdministratorbyId")]
+        public async Task<IActionResult> getAdminByid(int adminId)
+        {
+            return await GetResponseHandler(async () => await service.getAdminById(adminId));
+        }
+
+
     }
 }
