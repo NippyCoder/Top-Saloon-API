@@ -38,15 +38,15 @@ namespace TopSaloon.API.Controllers
         }
 
         [HttpPost("BarberTotalNumberOfHandledCustomer/{id}")]
-        public async Task<IActionResult> BarberTotalNumberOfHandledCustomer(int BarberId)
+        public async Task<IActionResult> BarberTotalNumberOfHandledCustomer(int id)
         {
-            return await AddItemResponseHandler(async () => await service.BarberTotalNumberOfHandledCustomer(BarberId));
+            return await AddItemResponseHandler(async () => await service.BarberTotalNumberOfHandledCustomer(id));
         }
 
         [HttpGet("GetBarberDetailsReports/{id}")]
-        public async Task<IActionResult> GetBarberDetailsReports(int BarberId)
+        public async Task<IActionResult> GetBarberDetailsReports(int id)
         {
-            return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(BarberId));
+            return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(id));
         }
 
     }
