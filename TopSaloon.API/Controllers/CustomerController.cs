@@ -41,6 +41,13 @@ namespace TopSaloon.API.Controllers
         {
             return await AddItemResponseHandler(async () => await service.GetCustomerTotalNumberOfVisit(CustomerId));
         }
+
+        [HttpGet("GetCustomerById/{id}")]
+        public async Task<IActionResult> GetCustomerById(int CustomerId)
+        {
+            return await AddItemResponseHandler(async () => await service.GetCustomerById(CustomerId));
+        }
+
         [HttpGet("GetCustomerVisitDetails/{id}")]
         public async Task<IActionResult> GetCustomerVisitDetails(int CustomerID)
         {
@@ -60,6 +67,12 @@ namespace TopSaloon.API.Controllers
         public async Task<IActionResult> AverageWaitingForToday(DateTime date)
         {
             return await GetResponseHandler(async () => await service.AverageWaitingForToday(date));
+        }
+
+        [HttpGet("GetAllCustomers")]
+        public async Task<IActionResult> GetAllCustomers()
+        {
+            return await AddItemResponseHandler(async () => await service.GetAllCustomers());
         }
 
     }
