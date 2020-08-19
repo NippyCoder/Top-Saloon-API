@@ -7,7 +7,8 @@ namespace TopSaloon.Entities.Models
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
-        public int CustomerName { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerMobile { get; set; }
         public float? OrderTotal { get; set; }
         public DateTime? FinishTime { get; set; }
         public int? WaitingTimeInMinutes { get; set; }
