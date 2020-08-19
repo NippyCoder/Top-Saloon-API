@@ -139,7 +139,7 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto");
+                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto,BarberQueue");
 
                 if (Barbers != null)
                 {

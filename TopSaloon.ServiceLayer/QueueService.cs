@@ -30,35 +30,15 @@ namespace TopSaloon.ServiceLayer
 
             var result = new ApiResponse<BarberQueueDTO>();
 
-           
-            BarberQueueDTO Queue = new BarberQueueDTO();
-
             try
             {
-                var BarberQueue = await unitOfWork.BarbersQueuesManager.GetBarberQueueByBarberId(barberId);
+                var barberQueueToFetch = await unitOfWork.BarbersQueuesManager.GetAsync(b=> b.BarberId == barberId, includeProperties: "Orders");
+                var BarberQueue = barberQueueToFetch.ToList().FirstOrDefault();
                 if (BarberQueue != null)
                 {
-                    Queue.Id = BarberQueue.Id;
-                    Queue.BarberId = BarberQueue.BarberId;
-                    Queue.QueueStatus = BarberQueue.QueueStatus;
-                    
-                    var Barber = await unitOfWork.BarbersManager.GetByIdAsync(barberId);
-
-                    if (Barber != null)
-                    {
-                        Queue.Barber.NameEN = Barber.NameEN;
-                        Queue.Barber.NameAR = Barber.NameAR;
-                        Queue.Barber.Status = Barber.Status;
-                        result.Data = Queue;
-                        result.Succeeded = true;
-                        return result;
-                    }
-                    else
-                    {
-                        result.Succeeded = false;
-                        result.Errors.Add("Barber not found!");
-                        return result;
-                    }  
+                    result.Data = mapper.Map<BarberQueueDTO>(BarberQueue);
+                    result.Succeeded = true;
+                    return result;
                 }
                 else
                 {
