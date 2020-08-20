@@ -41,10 +41,10 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetAllOrderFeedbackQuestions());
         }
-         [HttpGet("GetOrderFeedbackQuestionsById")]
-        public async Task<IActionResult> GetOrderFeedbackQuestionsById(int Id)
+         [HttpGet("GetOrderFeedbackQuestionsByOrderId")]
+        public async Task<IActionResult> GetOrderFeedbackQuestionsByOrderId(int Id)
         {
-            return await GetResponseHandler(async () => await service.GetOrderFeedbackQuestionsById(Id));
+            return await GetResponseHandler(async () => await service.GetOrderFeedbackQuestionsByOrderId(Id));
         }
 
         [HttpGet("GetFeedbackById")]

@@ -30,35 +30,15 @@ namespace TopSaloon.ServiceLayer
 
             var result = new ApiResponse<BarberQueueDTO>();
 
-           
-            BarberQueueDTO Queue = new BarberQueueDTO();
-
             try
             {
-                var BarberQueue = await unitOfWork.BarbersQueuesManager.GetBarberQueueByBarberId(barberId);
+                var barberQueueToFetch = await unitOfWork.BarbersQueuesManager.GetAsync(b=> b.BarberId == barberId, includeProperties: "Orders");
+                var BarberQueue = barberQueueToFetch.ToList().FirstOrDefault();
                 if (BarberQueue != null)
                 {
-                    Queue.Id = BarberQueue.Id;
-                    Queue.BarberId = BarberQueue.BarberId;
-                    Queue.QueueStatus = BarberQueue.QueueStatus;
-                    
-                    var Barber = await unitOfWork.BarbersManager.GetByIdAsync(barberId);
-
-                    if (Barber != null)
-                    {
-                        Queue.Barber.NameEN = Barber.NameEN;
-                        Queue.Barber.NameAR = Barber.NameAR;
-                        Queue.Barber.Status = Barber.Status;
-                        result.Data = Queue;
-                        result.Succeeded = true;
-                        return result;
-                    }
-                    else
-                    {
-                        result.Succeeded = false;
-                        result.Errors.Add("Barber not found!");
-                        return result;
-                    }  
+                    result.Data = mapper.Map<BarberQueueDTO>(BarberQueue);
+                    result.Succeeded = true;
+                    return result;
                 }
                 else
                 {
@@ -144,6 +124,7 @@ namespace TopSaloon.ServiceLayer
                         currentOrder.Status = "pending";
                         currentOrder.WaitingTimeInMinutes = order.TotalServicesWaitingTime;
                         currentOrder.TotalServicesWaitingTime = order.TotalServicesWaitingTime;
+                        currentOrder.CustomerId = order.CustomerId;
                         for (int i = 0; i < Queue.Orders.Count; i++)
                         {
                             if(i == Queue.Orders.Count - 1)
@@ -166,9 +147,20 @@ namespace TopSaloon.ServiceLayer
                             var FinalRes = await unitOfWork.SaveChangesAsync();
                             if (FinalRes)
                             {
-                                result.Succeeded = true;
-                                result.Data = true;
-                                return result;
+                                var queueAdjustmentResult = await SetQueueWaitingTimes();
+                                if (queueAdjustmentResult.Data == true)
+                                {
+                                    result.Succeeded = true;
+                                    result.Data = true;
+                                    return result;
+                                }
+                                else
+                                {
+                                    result.Succeeded = false;
+                                    result.Data = false;
+                                    result.Errors.Add("Unable to adjust queue times !");
+                                    return result;
+                                }
                             }
                             else
                             {
@@ -303,9 +295,11 @@ namespace TopSaloon.ServiceLayer
                         QueueTimeHandlerModel handler = new QueueTimeHandlerModel();
                         handler.QueueId = barberQueuesList[i].Id;
                         var queueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == handler.QueueId, 0, 0, null, includeProperties: "OrderServices");
+                        BarberQueue barberQueueToUpdate = await unitOfWork.BarbersQueuesManager.GetByIdAsync(barberQueuesList[i].Id);
+
                         if (queueOrders != null)
                         {
-                            BarberQueue barberQueueToUpdate = await unitOfWork.BarbersQueuesManager.GetByIdAsync(barberQueuesList[i].Id);
+                            
                             TimeSpan? CalculatedDateTime;
                             handler.Orders = mapper.Map<List<OrderDTO>>(queueOrders.ToList());
 
@@ -330,29 +324,26 @@ namespace TopSaloon.ServiceLayer
                                         handler.QueueEstimatedFinishTime = handler.QueueEstimatedFinishTime.Value.AddMinutes(Convert.ToDouble(handler.Orders[y].WaitingTimeInMinutes.Value));
                                         CalculatedDateTime = (handler.QueueEstimatedFinishTime - handler.Orders[y].OrderDate);
                                         handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
-                                        barberQueueToUpdate.QueueWaitingTime = Int32.Parse(CalculatedDateTime.Value.TotalMinutes.ToString());
+                                        barberQueueToUpdate.QueueWaitingTime = Convert.ToInt32(CalculatedDateTime.Value.TotalMinutes);
                                         //Calculated DateTime: time difference between General estimate finish time and current order creation date.
                                     }
                                 }
                                 CalculatedDateTime = (handler.QueueEstimatedFinishTime - DateTime.Now);
                                 handler.QueueEstimatedWaitingTime = CalculatedDateTime.Value.TotalMinutes;
-                                barberQueueToUpdate.QueueWaitingTime = Int32.Parse(CalculatedDateTime.Value.TotalMinutes.ToString());
+                                barberQueueToUpdate.QueueWaitingTime = Convert.ToInt32(CalculatedDateTime.Value.TotalMinutes);
                                 if (barberQueueToUpdate.QueueWaitingTime < 0)
                                 {
                                     barberQueueToUpdate.QueueWaitingTime = 0;
                                 }
                             }
 
-                            var res = await  unitOfWork.SaveChangesAsync();
-
-                            if(res != true)
-                            {
-                             countErrors++;
-                            }
+                           var res = await  unitOfWork.SaveChangesAsync();  
                         }
                         else
                         {
-                            countErrors++;
+                            barberQueueToUpdate.QueueWaitingTime = 0;
+
+                            await unitOfWork.SaveChangesAsync();
                         } 
                         //End of calculating queue waiting time .
                      }
@@ -375,7 +366,7 @@ namespace TopSaloon.ServiceLayer
                 else
                 {
                     result.Succeeded = false;
-                    result.Errors.Add("Error fetching Barber Queues!");
+                    result.Errors.Add("Error fetching Barber Queues");
                     return result;
                 }
             }

@@ -20,7 +20,7 @@ namespace TopSaloon.API.Controllers
 
         }
 
-        [HttpGet("getAllBarbers")]
+        [HttpGet("GetAllBarbers")]
         public async Task<IActionResult> GetAllBarbers()
         {
             return await GetResponseHandler(async () => await service.GetAllBarbers());
@@ -38,15 +38,27 @@ namespace TopSaloon.API.Controllers
         }
 
         [HttpPost("BarberTotalNumberOfHandledCustomer/{id}")]
-        public async Task<IActionResult> BarberTotalNumberOfHandledCustomer(int BarberId)
+        public async Task<IActionResult> BarberTotalNumberOfHandledCustomer(int id)
         {
-            return await AddItemResponseHandler(async () => await service.BarberTotalNumberOfHandledCustomer(BarberId));
+            return await AddItemResponseHandler(async () => await service.BarberTotalNumberOfHandledCustomer(id));
+        }
+
+        [HttpPost("CreateBarber")]
+        public async Task<IActionResult> CreateBarber(CreateBarberDTO model)
+        {
+            return await AddItemResponseHandler(async () => await service.CreateBarber(model));
         }
 
         [HttpGet("GetBarberDetailsReports/{id}")]
-        public async Task<IActionResult> GetBarberDetailsReports(int BarberId)
+        public async Task<IActionResult> GetBarberDetailsReports(int id)
         {
-            return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(BarberId));
+            return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(id));
+        }
+
+        [HttpGet("DeleteBarberById/{id}")]
+        public async Task<IActionResult> DeleteBarberById(int id)
+        {
+            return await AddItemResponseHandler(async () => await service.DeleteBarberById(id));
         }
 
     }

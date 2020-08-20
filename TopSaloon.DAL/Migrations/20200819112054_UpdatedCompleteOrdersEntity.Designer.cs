@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TopSaloon.DAL;
 
 namespace TopSaloon.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200819112054_UpdatedCompleteOrdersEntity")]
+    partial class UpdatedCompleteOrdersEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,19 +348,13 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<int>("BarberId")
                         .HasColumnType("int");
 
-                    b.Property<string>("BarberNameAR")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BarberNameEN")
+                    b.Property<string>("BarberName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerNameAR")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerNameEN")
+                    b.Property<string>("CustomerName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CustomerWaitingTimeInMinutes")
@@ -477,11 +473,8 @@ namespace TopSaloon.DAL.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("CustomerMobile")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CustomerName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CustomerName")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("FinishTime")
                         .HasColumnType("datetime2");

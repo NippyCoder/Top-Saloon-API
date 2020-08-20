@@ -4,6 +4,9 @@ using System.Text;
 using TopSaloon.DAL;
 using TopSaloon.Entities.Models;
 using TopSaloon.Repository;
+using System.Threading.Tasks;
+using System.Linq;
+
 
 namespace TopSaloon.Core.Managers
 {
@@ -13,7 +16,19 @@ namespace TopSaloon.Core.Managers
         {
 
         }
+        public async Task<int> GetSigndInbarbers()
+        {
 
+            return await Task.Run(() =>
+            {
+                var myday = DateTime.Today;
+        
+                int Result = context.CompleteOrders.Where(A => A.OrderDateTime.Value.Date >= myday).Distinct().Count(); 
+
+                return Result;
+
+            });
+        }
 
 
     }
