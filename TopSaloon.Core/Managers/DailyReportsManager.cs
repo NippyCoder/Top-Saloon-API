@@ -16,12 +16,14 @@ namespace TopSaloon.Core.Managers
         {
 
         }
-        public async Task<int> GetSigndInbarbers(DateTime Today)
+        public async Task<int> GetSigndInbarbers()
         {
 
             return await Task.Run(() =>
             {
-                int Result = context.CompleteOrders.Where(a => a.OrderDateTime == Today).Distinct().Count(); 
+                var myday = DateTime.Today;
+        
+                int Result = context.CompleteOrders.Where(A => A.OrderDateTime.Value.Date >= myday).Distinct().Count(); 
 
                 return Result;
 

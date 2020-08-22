@@ -27,27 +27,27 @@ namespace TopSaloon.API.Controllers
 
         [HttpGet("GetTotalNumberCustomerForToday")]
 
-        public async Task<IActionResult> GetTotalNumberCustomerForToday(DateTime Today)
+        public async Task<IActionResult> GetTotalNumberCustomerForToday( )
         {
-            return await GetResponseHandler(async () => await service.GetTotalNumberCustomerForToday(Today));
+            return await GetResponseHandler(async () => await service.GetTotalNumberCustomerForToday( ));
         }
         [HttpGet("GetTotalServiceCostForToday")]
 
-        public async Task<IActionResult> GetTotalServiceCostForToday(DateTime Today)
+        public async Task<IActionResult> GetTotalServiceCostForToday( )
         {
-            return await GetResponseHandler(async () => await service.GetTotalServiceCostForToday(Today));
+            return await GetResponseHandler(async () => await service.GetTotalServiceCostForToday( ));
         }
         [HttpGet("GetAverageOfWaitingTimeForToday")]
 
-        public async Task<IActionResult> GetAverageOfWaitingTimeForToday(DateTime Today)
+        public async Task<IActionResult> GetAverageOfWaitingTimeForToday( )
         {
-            return await GetResponseHandler(async () => await service.GetAverageOfWaitingTimeForToday(Today));
+            return await GetResponseHandler(async () => await service.GetAverageOfWaitingTimeForToday(  ));
         }
         [HttpGet("GetNumberOfSignedInBarbersForToday")]
 
-        public async Task<IActionResult> GetNumberOfSignedInBarbersForToday(DateTime Today)
+        public async Task<IActionResult> GetNumberOfSignedInBarbersForToday()
         {
-            return await GetResponseHandler(async () => await service.GetNumberOfSignedInBarbersForToday(Today));
+            return await GetResponseHandler(async () => await service.GetNumberOfSignedInBarbersForToday( ));
         }
     }
 }
