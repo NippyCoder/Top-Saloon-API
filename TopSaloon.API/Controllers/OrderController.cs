@@ -47,5 +47,10 @@ namespace TopSaloon.API.Controllers
         {
             return await EditItemResponseHandler(async () => await service.FinalizeOrder(orderId, customerId));
         }
+        [HttpPut("ConfirmOrderServices")]
+        public async Task<IActionResult> ConfirmOrderServices(List<OrderServiceDTO> orderServices)
+        {
+            return await EditItemResponseHandler(async () => await service.ConfirmOrderServices(orderServices));
+        }
     }
 }

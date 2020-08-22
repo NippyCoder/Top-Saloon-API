@@ -67,6 +67,7 @@ namespace TopSaloon.ServiceLayer
             {
                 order.TotalServicesWaitingTime += order.OrderServices[i].Time;
                 order.OrderTotal += order.OrderServices[i].Price;
+                order.OrderServices[i].IsConfirmed = false;
             }
             try
             {
