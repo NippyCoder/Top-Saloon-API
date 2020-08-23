@@ -1,13 +1,16 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage.Internal;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using TopSaloon.DTOs.Models;
 using TopSaloon.Core;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
+using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
 using AutoMapper;
 
@@ -189,6 +192,35 @@ namespace TopSaloon.ServiceLayer
                 if (order != null)
                 {
                     result.Data = mapper.Map<OrderFeedbackDTO>(order[0]);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find order feedback question !");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
+        public async Task<ApiResponse<List<ServiceFeedbackQuestionDTO>>> GetOrderFeedbackQuestionsByServiceId(int Id)
+        {
+            ApiResponse<List <ServiceFeedbackQuestionDTO>> result = new ApiResponse<List<ServiceFeedbackQuestionDTO>>();
+            try
+            {
+                var orderFeedback = await unitOfWork.ServiceFeedBackQuestionsManager.GetAsync(b => b.ServiceId == Id);
+                List<ServiceFeedbackQuestionDTO> feedbacks = mapper.Map<List<ServiceFeedbackQuestionDTO>>(orderFeedback.ToList()); 
+                if (feedbacks != null)
+                {
+                    result.Data = feedbacks;
                     result.Succeeded = true;
                     return result;
                 }

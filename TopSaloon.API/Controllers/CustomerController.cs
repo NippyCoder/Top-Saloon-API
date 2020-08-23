@@ -74,6 +74,12 @@ namespace TopSaloon.API.Controllers
         {
             return await AddItemResponseHandler(async () => await service.GetAllCustomers());
         }
+        [HttpPut("EditCustomer")]
+
+        public async Task<IActionResult> EditCustomer(CustomerEditDTO model)
+        {
+            return await AddItemResponseHandler(async () => await service.EditCustomer(model));
+        }
 
     }
 }
