@@ -49,6 +49,12 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.CreateBarber(model));
         }
 
+        [HttpPost("EditBarber")]
+        public async Task<IActionResult> EditBarber(EditBarberDTO model)
+        {
+            return await AddItemResponseHandler(async () => await service.EditBarber(model));
+        }
+
         [HttpGet("GetBarberDetailsReports/{id}")]
         public async Task<IActionResult> GetBarberDetailsReports(int id)
         {

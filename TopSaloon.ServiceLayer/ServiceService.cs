@@ -39,7 +39,7 @@ namespace TopSaloon.ServiceLayer
                 newService.NameEN = model.NameEN;
                 newService.Time = model.Time;
                 newService.Price = model.Price;
-                Service ServiceResult = await unitOfWork.ServicesManager.GetServiceByName(model.NameAR);
+                Service ServiceResult = await unitOfWork.ServicesManager.GetServiceByNameAR(model.NameAR);
                 if (ServiceResult == null)
                 {
                     var createServiceResult = await unitOfWork.ServicesManager.CreateAsync(newService);
@@ -113,9 +113,10 @@ namespace TopSaloon.ServiceLayer
             try
             {
                 var service = await unitOfWork.ServicesManager.GetByIdAsync(model.Id);
-                Service serv = await unitOfWork.ServicesManager.GetServiceByName(model.NameEN);
+                Service servEN = await unitOfWork.ServicesManager.GetServiceByNameEN(model.NameEN);
+                Service servAR = await unitOfWork.ServicesManager.GetServiceByNameAR(model.NameAR);
 
-                if (serv == null)
+                if ((model.NameAR==service.NameAR && model.NameEN==model.NameEN)||( servEN==null && servAR==null))
                 {
                     service.NameAR = model.NameAR;
                     service.NameEN = model.NameEN;
@@ -140,6 +141,7 @@ namespace TopSaloon.ServiceLayer
                         return result;
                     }
                 }
+
                 else
                 {
                     result.Succeeded = false;
