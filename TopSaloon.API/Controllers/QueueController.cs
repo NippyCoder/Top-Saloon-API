@@ -24,11 +24,10 @@ namespace TopSaloon.API.Controllers
             return await GetResponseHandler(async () => await service.GetBarberQueueByBarberId(barberId));
         }
 
-        [HttpPut("Re-AssignOrderToDifferentQueue/{orderId}")]
-
-        public async Task<IActionResult> ReassignOrderToDifferentQueue(int orderId, int newBarberQueue)
+        [HttpPost("ReassignOrder")]
+        public async Task<IActionResult> ReassignOrder (string orderId, string newQueueId)
         {
-            return await EditItemResponseHandler(async () => await service.ReassignOrderToDifferentQueue(orderId, newBarberQueue));
+            return await AddItemResponseHandler(async () => await service.ReassignOrderToDifferentQueue(orderId, newQueueId));
         }
 
         [HttpGet("SetQueueWaitingTimes")]

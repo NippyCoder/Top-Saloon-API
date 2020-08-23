@@ -38,7 +38,7 @@ namespace TopSaloon.API.Controllers
         }
 
         [HttpPut("CancelOrder")]
-        public async Task<IActionResult> CancelOrder(int orderId, int customerId)
+        public async Task<IActionResult> CancelOrder(string orderId, string customerId)
         {
             return await EditItemResponseHandler(async () => await service.CancelOrder(orderId, customerId));
         }

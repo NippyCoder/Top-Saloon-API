@@ -132,21 +132,20 @@ namespace TopSaloon.ServiceLayer
         }
 
         //----------------------------- Cancel Order ----------------------------------------------//
-        public async Task<ApiResponse<string>> CancelOrder(int orderId, int customerId)
+        public async Task<ApiResponse<string>> CancelOrder(string orderId, string customerId)
         {
-            //Cancel Order: set order status to cancelled, pop order from corresponding queue.
-
+            //Cancel Order: set order status to cancelled, pop order from corresponding queue. 
             ApiResponse<string> result = new ApiResponse<string>();
 
             try
             {
-                var order = await unitOfWork.OrdersManager.GetAsync(b => b.Id == orderId, 0, 0, null, includeProperties: "OrderServices");
+                var order = await unitOfWork.OrdersManager.GetAsync(b => b.Id == Int32.Parse(orderId), 0, 0, null, includeProperties: "OrderServices");
                 Order OrderToUpdate = order.FirstOrDefault();
                 CompleteOrder OrderHistory = new CompleteOrder();
                 OrderHistory.OrderServicesList = "";
                 if (OrderToUpdate != null)
                 {
-                    var customer = await unitOfWork.CustomersManager.GetByIdAsync(customerId);
+                    var customer = await unitOfWork.CustomersManager.GetByIdAsync(Int32.Parse(customerId));
                     if(customer != null)
                     {
                         OrderToUpdate.Status = "Cancelled";
@@ -177,7 +176,7 @@ namespace TopSaloon.ServiceLayer
                                 BarberQueue QueueToUpdate = barberQueue.FirstOrDefault();
                                 for (int i = 0; i < QueueToUpdate.Orders.Count; i++)
                                 {
-                                    if (QueueToUpdate.Orders[i].Id == orderId)
+                                    if (QueueToUpdate.Orders[i].Id == Int32.Parse(orderId))
                                     {
                                         QueueToUpdate.Orders.Remove(QueueToUpdate.Orders[i]);
                                     }
@@ -210,6 +209,7 @@ namespace TopSaloon.ServiceLayer
                                 var finalres = await unitOfWork.SaveChangesAsync();
                                 if (finalres)
                                 {
+                                    await SetQueueWaitingTimes();
                                     result.Data = "Order cancelled successfully.";
                                     result.Succeeded = true;
                                     return result;
