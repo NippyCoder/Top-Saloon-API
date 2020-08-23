@@ -59,10 +59,11 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.getAdminById(adminId));
         }
-        [HttpPut("editAdministratorbyId")]
-        public async Task<IActionResult> EditAdminByid(AdministratorDTO administrator)
+
+        [HttpPost("editAdministratorbyId")]
+        public async Task<IActionResult> EditAdminByid( editAdministrator adminCreationModel)
         {
-            return await EditItemResponseHandler(async () => await service.EditAdminById(administrator));
+            return await AddItemResponseHandler(async () => await service.EditAdminById(adminCreationModel));
         }
 
     }

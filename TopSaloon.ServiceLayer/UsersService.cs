@@ -39,7 +39,7 @@ namespace TopSaloon.ServiceLayer
                 {
                     var role = new IdentityRole();
                     role.Name = roleName;
-                    
+
                     var res = await unitOfWork.RoleManager.CreateAsync(role);
 
                     if (res.Succeeded)
@@ -257,7 +257,7 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-        
+
         public async Task<ApiResponse<float>> GetUserDailyEarningPerTime(DateTime Start, DateTime End)
         {
             ApiResponse<float> result = new ApiResponse<float>();
@@ -296,95 +296,46 @@ namespace TopSaloon.ServiceLayer
             {
                 Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync(adminId);
 
+
                 if (adminValue != null)
                 {
 
                     var adminData = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
 
-                    if (adminData != null)
-                    {
-                        AdministratorDTO adminDto = new AdministratorDTO();
-                        adminDto.Id = adminValue.Id;
-                        adminDto.UserId = adminValue.UserId;
-                        adminDto.ShopId = adminValue.ShopId;
-
-                        AdminCreationModel adminModel = new AdminCreationModel();
-
-                        adminModel.FirstName = adminData.FirstName;
-                        adminModel.LastName = adminData.LastName;
-                        adminModel.Email = adminData.Email;
-                        adminModel.PhoneNumber = adminData.PhoneNumber;
-                        adminModel.Password = adminData.PasswordHash;
-                        
-
-                        result.Data = adminModel;
-                        result.Succeeded = true;
-                        return result;
-                    }
-                    else
-                    {
-                        result.Succeeded = false;
-                        result.Errors.Add("User not found");
-                        return result;
-                    }
-                }
-                else
-                {
-                    result.Succeeded = false;
-                    result.Errors.Add("Invalid input value");
-                    return result;
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                result.Succeeded = false;
-                result.Errors.Add(ex.Message);
-                return result;
-            }
-
-        }
-
-        public async Task<ApiResponse<bool>> EditAdminById(AdministratorDTO adminModel)
-        {
-            ApiResponse<bool> result = new ApiResponse<bool>();
-
-            try
-            {
-                Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync();
-                if(adminValue !=null)
-                {
-                    adminValue.UserId = adminValue.UserId;
-                    //var userData = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
-                    //userData.FirstName = adminModel.FirstName;
-                    //userData.LastName = adminModel.LastName;
-                    //userData.Email = adminModel.Email;
-                    //userData.PhoneNumber = adminModel.PhoneNumber;
-                    //userData.PasswordHash = adminModel.Password;
-
-                    var res = await unitOfWork.SaveChangesAsync();
-                        if(res == true)
+                        if (adminData != null)
                         {
-                            result.Data = true;
+                            AdministratorDTO adminDto = new AdministratorDTO();
+                            adminDto.Id = adminValue.Id;
+                            adminDto.UserId = adminValue.UserId;
+                            adminDto.ShopId = adminValue.ShopId;
+
+
+                            AdminCreationModel adminModel = new AdminCreationModel();
+
+                            adminModel.FirstName = adminData.FirstName;
+                            adminModel.LastName = adminData.LastName;
+                            adminModel.Email = adminData.Email;
+                            adminModel.PhoneNumber = adminData.PhoneNumber;
+                            adminModel.Password = adminData.PasswordHash;
+
+                            result.Data = adminModel;
                             result.Succeeded = true;
                             return result;
                         }
                         else
                         {
                             result.Succeeded = false;
-                            result.Errors.Add("res not true");
+                            result.Errors.Add("User not found");
                             return result;
                         }
-
                     }
                     else
                     {
                         result.Succeeded = false;
-                        result.Errors.Add("User not found");
+                        result.Errors.Add("Invalid input value");
                         return result;
                     }
-
+                
             }
             catch (Exception ex)
             {
@@ -392,45 +343,48 @@ namespace TopSaloon.ServiceLayer
                 result.Errors.Add(ex.Message);
                 return result;
             }
+
         }
-        public async Task<ApiResponse<AdminCreationModel>> getAdminById(int adminId)
+
+        public async Task<ApiResponse<bool>> EditAdminById(editAdministrator adminDto)
         {
-            ApiResponse<AdminCreationModel> result = new ApiResponse<AdminCreationModel>();
+            ApiResponse<bool> result = new ApiResponse<bool>();
             try
             {
-                Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync(adminId);
+                Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync(adminDto.id);
+
                 if (adminValue != null)
                 {
-                    var adminData = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
-                    if (adminData != null)
+                    var userdata = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
+                    userdata.FirstName = adminDto.FirstName;
+                    userdata.LastName = adminDto.LastName;
+                    userdata.Email = adminDto.Email;
+                    userdata.PhoneNumber = adminDto.PhoneNumber;
+
+
+                    var res = await unitOfWork.UserManager.UpdateAsync(userdata);
+                    if (res.Succeeded)
                     {
-                        AdministratorDTO adminDto = new AdministratorDTO();
-                        adminDto.Id = adminValue.Id;
-                        adminDto.UserId = adminValue.UserId;
-                        adminDto.ShopId = adminValue.ShopId;
-                        AdminCreationModel adminModel = new AdminCreationModel();
-                        adminModel.FirstName = adminData.FirstName;
-                        adminModel.LastName = adminData.LastName;
-                        adminModel.Email = adminData.Email;
-                        adminModel.PhoneNumber = adminData.PhoneNumber;
-                        adminModel.Password = adminData.PasswordHash;
-                        result.Data = adminModel;
-                        result.Succeeded = true;
-                        return result;
+                      await unitOfWork.SaveChangesAsync();
+                      result.Data = true;
+                      result.Succeeded = true;
+                      return result;
                     }
                     else
                     {
                         result.Succeeded = false;
-                        result.Errors.Add("User not found");
+                        result.Errors.Add("res not true");
                         return result;
                     }
+
                 }
                 else
                 {
                     result.Succeeded = false;
-                    result.Errors.Add("Invalid input value");
+                    result.Errors.Add("User not found");
                     return result;
                 }
+
             }
             catch (Exception ex)
             {
@@ -439,8 +393,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
-
     }
-}
+    }
+
 
