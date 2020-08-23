@@ -364,7 +364,56 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
+        public async Task<ApiResponse<bool>> EditCustomer( CustomerEditDTO model)
+        {
+            ApiResponse<bool> result = new ApiResponse<bool>();
+            try
+            {
+                Customer customer = await unitOfWork.CustomersManager.GetByIdAsync(model.Id);
+                var cust = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(model.PhoneNumber);
 
+                if(model.PhoneNumber==customer.PhoneNumber || cust==null )
+                {
+
+                    customer.Name = model.Name;
+                    customer.PhoneNumber = model.PhoneNumber;
+                  
+                    await unitOfWork.CustomersManager.UpdateAsync(customer);
+
+                    var res = await unitOfWork.SaveChangesAsync();
+
+                    if(res == true)
+                    {
+                      
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Error updating service !");
+                        result.ErrorType = ErrorType.LogicalError;
+                        return result;
+                    }
+                }
+               
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("A customer with a similar name alreadyd exists !");
+                    result.ErrorType = ErrorType.LogicalError;
+                    return result;
+                }
+                    
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+            }
+            return result;
+        }
     }
 }
 
