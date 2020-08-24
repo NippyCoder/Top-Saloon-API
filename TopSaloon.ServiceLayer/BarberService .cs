@@ -13,7 +13,7 @@ using TopSaloon.DTOs.Enums;
 using TopSaloon.DTOs.Models;
 using TopSaloon.Entities.Models;
 using AutoMapper;
-
+using Microsoft.VisualBasic;
 
 namespace TopSaloon.ServiceLayer
 {
@@ -360,6 +360,105 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+
+        public async Task<ApiResponse<BarberDTO>> ChangeBarberStatus(int id)
+        {
+            ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
+            try
+            {
+                Barber barberToEdit = await unitOfWork.BarbersManager.GetByIdAsync(id);
+
+                if(barberToEdit != null)
+                {
+                    if(barberToEdit.Status == "Available")
+                    {
+                        barberToEdit.Status = "Unavailable";
+                    }
+                    else
+                    {
+                        barberToEdit.Status = "Available";
+                    }
+
+                    var res = await unitOfWork.BarbersManager.UpdateAsync(barberToEdit);
+
+                    await unitOfWork.SaveChangesAsync();
+
+                    if (res == true)
+                    {
+                        result.Succeeded = true;
+                        result.Data = mapper.Map<BarberDTO>(barberToEdit);
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Failed to update barber status !");
+                        return result;
+                    }
+
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Failed to find specified barber !");
+                    return result;
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
+
+        //public async Task<ApiResponse<BarberDTO>> SignInBarber(int id)
+        //{
+        //    ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
+        //    try
+        //    {
+        //        Barber barberToEdit = await unitOfWork.BarbersManager.GetByIdAsync(id);
+
+        //        if (barberToEdit != null)
+        //        {
+        //            BarberLogin barberLoginResult = await unitOfWork.BarberLoginsManager.GetAsync(b => b.BarberId == id );
+
+        //            var res = await unitOfWork.BarbersManager.UpdateAsync(barberToEdit);
+
+        //            await unitOfWork.SaveChangesAsync();
+
+        //            if (res == true)
+        //            {
+        //                result.Succeeded = true;
+        //                result.Data = mapper.Map<BarberDTO>(barberToEdit);
+        //                return result;
+        //            }
+        //            else
+        //            {
+        //                result.Succeeded = false;
+        //                result.Errors.Add("Failed to update barber status !");
+        //                return result;
+        //            }
+
+        //        }
+        //        else
+        //        {
+        //            result.Succeeded = false;
+        //            result.Errors.Add("Failed to find specified barber !");
+        //            return result;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Succeeded = false;
+        //        result.Errors.Add(ex.Message);
+        //        return result;
+        //    }
+        //}
+
 
     }
 }

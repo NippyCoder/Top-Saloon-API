@@ -61,6 +61,19 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(id));
         }
 
+        [HttpGet("ChangeBarberStatus/{id}")]
+        public async Task<IActionResult> ChangeBarberStatus(int id)
+        {
+            return await AddItemResponseHandler(async () => await service.ChangeBarberStatus(id));
+        }
+
+        //[HttpGet("SignInBarber/{id}")]
+        //public async Task<IActionResult> SignInBarber(int id)
+        //{
+        //    return await AddItemResponseHandler(async () => await service.SignInBarber(id));
+        //}
+
+
         [HttpGet("DeleteBarberById/{id}")]
         public async Task<IActionResult> DeleteBarberById(int id)
         {
