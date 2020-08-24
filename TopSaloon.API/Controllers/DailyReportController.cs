@@ -49,5 +49,36 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetNumberOfSignedInBarbersForToday( ));
         }
+        [HttpGet("GetTotalAmountOfCostPerDay")]
+
+        public async Task<IActionResult> GetTotalAmountOfCostPerDay()
+        {
+            return await GetResponseHandler(async () => await service.GetTotalAmountOfCostPerDay());
+        }
+
+        [HttpGet("GetTotalServiceCostByPeriod")]
+
+        public async Task<IActionResult> GetTotalServiceCost(string filter)
+        {
+            return await GetResponseHandler(async () => await service.GetTotalServiceCost(filter));
+        }
+        [HttpGet("GetTotalNumberCustomerByPeriod")]
+
+        public async Task<IActionResult> GetTotalNumberCustomer(string filter)
+        {
+            return await GetResponseHandler(async () => await service.GetTotalNumberCustomer(filter));
+        }
+        [HttpGet("GetAverageOfWaitingTimeByPeriod")]
+
+        public async Task<IActionResult> GetAverageOfWaitingTime(string filter)
+        {
+            return await GetResponseHandler(async () => await service.GetAverageOfWaitingTime(filter));
+        }
+        [HttpGet("GetNumberOfSignedInBarbersByPeriod")]
+
+        public async Task<IActionResult> GetNumberOfSignedInBarbers(string filter)
+        {
+            return await GetResponseHandler(async () => await service.GetNumberOfSignedInBarbers(filter));
+        }
     }
 }

@@ -149,7 +149,7 @@ namespace TopSaloon.ServiceLayer
                     result.Data = mapper.Map<CustomerDTO>(customer[0]);
                     result.Succeeded = true;
                     return result;
-                }
+                }   
                 else
                 {
                     result.Succeeded = false;
@@ -308,7 +308,7 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                var customerList = await unitOfWork.CustomersManager.GetAsync();
+                var customerList = await unitOfWork.CustomersManager.GetAsync(a=>a.Id!=0 , includeProperties: "CompleteOrders");
 
                 List<Customer> customerListToReturn = customerList.ToList();
 
