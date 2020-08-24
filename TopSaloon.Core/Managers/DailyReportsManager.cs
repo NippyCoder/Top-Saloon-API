@@ -29,6 +29,33 @@ namespace TopSaloon.Core.Managers
 
             });
         }
+        public async Task<int> GetSigndInbarbers(DateTime lastdate)
+        {
+
+            return await Task.Run(() =>
+            {
+                var myday = DateTime.Today;
+
+                int Result = context.CompleteOrders.Where(A => A.OrderDateTime >= lastdate && A.OrderDateTime <= myday).Distinct().Count();
+
+                return Result;
+
+            });
+        }
+        public async Task<List<CompleteOrder>> CosteachDay()
+        {
+
+            return await Task.Run(() =>
+            {
+
+                List<CompleteOrder> Result = context.CompleteOrders.Where(A => A.Id != 0).ToList();
+                Result.GroupBy(a => a.OrderDateTime);
+                Result.OrderByDescending(x=>x.OrderDateTime); 
+
+                return Result;
+
+            });
+        }
 
 
     }

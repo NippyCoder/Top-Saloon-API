@@ -360,6 +360,38 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<List<CompleteOrder>>> GetBarberAllCustomersHandled(int id)
+        {
+            ApiResponse<List<CompleteOrder>> result = new ApiResponse<List<CompleteOrder>>();
+
+            try
+            {
+                var barbersList = await unitOfWork.CompleteOrdersManager.GetAsync(A=>A.BarberId==id);
+
+                List<CompleteOrder> barberListToReturn = barbersList.ToList();
+
+
+                if (barberListToReturn != null)
+                {
+                    result.Data = mapper.Map<List<CompleteOrder>>(barberListToReturn);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to retreive barbers list !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+
+        }
 
     }
 }

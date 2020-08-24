@@ -316,7 +316,7 @@ namespace TopSaloon.ServiceLayer
                             adminModel.LastName = adminData.LastName;
                             adminModel.Email = adminData.Email;
                             adminModel.PhoneNumber = adminData.PhoneNumber;
-                            adminModel.Password = adminData.PasswordHash;
+                          
 
                             result.Data = adminModel;
                             result.Succeeded = true;
@@ -348,6 +348,7 @@ namespace TopSaloon.ServiceLayer
 
         public async Task<ApiResponse<bool>> EditAdminById(editAdministrator adminDto)
         {
+     
             ApiResponse<bool> result = new ApiResponse<bool>();
             try
             {
@@ -361,14 +362,14 @@ namespace TopSaloon.ServiceLayer
                     userdata.Email = adminDto.Email;
                     userdata.PhoneNumber = adminDto.PhoneNumber;
 
-
                     var res = await unitOfWork.UserManager.UpdateAsync(userdata);
+
                     if (res.Succeeded)
                     {
-                      await unitOfWork.SaveChangesAsync();
-                      result.Data = true;
-                      result.Succeeded = true;
-                      return result;
+                        await unitOfWork.SaveChangesAsync();
+                        result.Data = true;
+                        result.Succeeded = true;
+                        return result;
                     }
                     else
                     {
@@ -376,8 +377,76 @@ namespace TopSaloon.ServiceLayer
                         result.Errors.Add("res not true");
                         return result;
                     }
-
                 }
+                    
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("User not found");
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<bool>> EditAdminPasswordById(EditAdminPassword adminDto)
+        {
+
+            ApiResponse<bool> result = new ApiResponse<bool>();
+            try
+            {
+                Administrator adminValue = await unitOfWork.AdministratorsManager.GetByIdAsync(adminDto.id);
+
+                if (adminValue != null)
+                {
+                    var userdata = await unitOfWork.UserManager.FindByIdAsync(adminValue.UserId);
+                    
+                    var checkPassword = await unitOfWork.UserManager.CheckPasswordAsync(userdata, adminDto.oldPassword);
+                    if (checkPassword)
+                    {
+                        var changePassword = await unitOfWork.UserManager.ChangePasswordAsync(userdata, adminDto.oldPassword, adminDto.newPassword);
+                        if (changePassword != null)
+                        {
+                            var hasher = new PasswordHasher<ApplicationUser>();
+
+                            userdata.PasswordHash = hasher.HashPassword(userdata, adminDto.newPassword);
+                            var res = await unitOfWork.UserManager.UpdateAsync(userdata);
+                            if (res.Succeeded)
+                            {
+                                await unitOfWork.SaveChangesAsync();
+                                result.Data = true;
+                                result.Succeeded = true;
+                                return result;
+                            }
+                            else
+                            {
+                                result.Succeeded = false;
+                                result.Errors.Add("res not true");
+                                return result;
+                            }
+
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Errors.Add("change not true");
+                            return result;
+                        }
+
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("password not true");
+                        return result;
+                    }
+                }
+
                 else
                 {
                     result.Succeeded = false;

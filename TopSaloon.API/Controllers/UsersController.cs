@@ -65,6 +65,10 @@ namespace TopSaloon.API.Controllers
         {
             return await AddItemResponseHandler(async () => await service.EditAdminById(adminCreationModel));
         }
-
+        [HttpPost("editAdministratorPasswordbyId")]
+        public async Task<IActionResult> EditAdminPasswordById(EditAdminPassword adminCreationModel)
+        {
+            return await AddItemResponseHandler(async () => await service.EditAdminPasswordById(adminCreationModel));
+        }
     }
 }
