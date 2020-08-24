@@ -24,7 +24,7 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.AddServiceFeedbackQuestion(model));
         }
 
-        [HttpPost("RemoveServiceFeedbackQuestion")]
+        [HttpGet("RemoveServiceFeedbackQuestion/{questionId}")]
         public async Task<IActionResult> RemoveServiceFeedbackQuestion(string questionId)
         {
             return await AddItemResponseHandler(async () => await service.RemoveServiceFeedbackQuestion(questionId));
