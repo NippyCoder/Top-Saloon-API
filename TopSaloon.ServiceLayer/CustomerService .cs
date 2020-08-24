@@ -149,7 +149,7 @@ namespace TopSaloon.ServiceLayer
                     result.Data = mapper.Map<CustomerDTO>(customer[0]);
                     result.Succeeded = true;
                     return result;
-                }
+                }   
                 else
                 {
                     result.Succeeded = false;

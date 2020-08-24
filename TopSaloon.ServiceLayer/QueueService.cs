@@ -65,8 +65,18 @@ namespace TopSaloon.ServiceLayer
             order.OrderTotal = 0;
             for (int i=0; i<order.OrderServices.Count; i++)
             {
+                var orderServiceToFetch = await unitOfWork.ServicesManager.GetAsync(s => s.Id == order.OrderServices[i].ServiceId);
+                var orderService = orderServiceToFetch.FirstOrDefault();
+                order.OrderServices[i].NameAR = orderService.NameAR;
+                order.OrderServices[i].NameEN = orderService.NameEN;
+                order.OrderServices[i].Price = orderService.Price;
+                order.OrderServices[i].Time = orderService.Time;
+            }
+            for(int i=0; i<order.OrderServices.Count; i++)
+            {
                 order.TotalServicesWaitingTime += order.OrderServices[i].Time;
                 order.OrderTotal += order.OrderServices[i].Price;
+                order.OrderServices[i].IsConfirmed = false;
             }
             try
             {
@@ -85,6 +95,10 @@ namespace TopSaloon.ServiceLayer
                         currentOrder.WaitingTimeInMinutes = order.TotalServicesWaitingTime;
                         currentOrder.TotalServicesWaitingTime = order.TotalServicesWaitingTime;
                         currentOrder.Status = "inprogress";
+                        currentOrder.CustomerId = order.CustomerId;
+                        var customer = await unitOfWork.CustomersManager.GetByIdAsync(currentOrder.CustomerId);
+                        currentOrder.CustomerMobile = customer.PhoneNumber;
+                        currentOrder.CustomerName = customer.Name;
                         currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices.ToList());
                         var CreationResult = await unitOfWork.OrdersManager.CreateAsync(currentOrder);
             
@@ -96,6 +110,7 @@ namespace TopSaloon.ServiceLayer
                                 ServiceCreationResult = await unitOfWork.OrderServicesManager.CreateAsync(currentOrder.OrderServices[i]);
                             }
                             Queue.QueueStatus = "busy";
+                            Queue.QueueWaitingTime = currentOrder.TotalServicesWaitingTime.Value;
                             var BarberUpdateResult = await unitOfWork.BarbersQueuesManager.UpdateAsync(Queue);
                             var FinalRes = await unitOfWork.SaveChangesAsync();
                             if (FinalRes)
@@ -144,30 +159,11 @@ namespace TopSaloon.ServiceLayer
                             {
                                 ServiceCreationResult = await unitOfWork.OrderServicesManager.CreateAsync(currentOrder.OrderServices[i]);
                             }
-                            var FinalRes = await unitOfWork.SaveChangesAsync();
-                            if (FinalRes)
-                            {
-                                var queueAdjustmentResult = await SetQueueWaitingTimes();
-                                if (queueAdjustmentResult.Data == true)
-                                {
-                                    result.Succeeded = true;
-                                    result.Data = true;
-                                    return result;
-                                }
-                                else
-                                {
-                                    result.Succeeded = false;
-                                    result.Data = false;
-                                    result.Errors.Add("Unable to adjust queue times !");
-                                    return result;
-                                }
-                            }
-                            else
-                            {
-                                result.Succeeded = false;
-                                result.Errors.Add("Unable to save changes");
-                                return result;
-                            }
+                            await unitOfWork.SaveChangesAsync();
+                            await SetQueueWaitingTimes();
+                            result.Succeeded = true;
+                            result.Data = true;
+                            return result;
                         }
                         else
                         {
@@ -378,43 +374,52 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-        public async Task<ApiResponse<bool>> ReassignOrderToDifferentQueue(int orderId, int newBarberQueue)
+        public async Task<ApiResponse<bool>> ReassignOrderToDifferentQueue(string orderId, string newQueueId)
         {
+            OrderToReassign orderToReassign = new OrderToReassign();
+            orderToReassign.OrderId = Int32.Parse(orderId);
+            orderToReassign.NewQueueId = Int32.Parse(newQueueId);
+
             //Return Barber Name, barber status, barber queue status, total waiting time (orders)
 
             var result = new ApiResponse<bool>();
 
 
             Order orderToUpdate = new Order();
-
+            OrderToAddDTO orderToCreate = new OrderToAddDTO();
             try
             {
-                var order = await unitOfWork.OrdersManager.GetByIdAsync(orderId);
+                var orderToFetch = await unitOfWork.OrdersManager.GetAsync(b=> b.Id == orderToReassign.OrderId, includeProperties: "OrderServices");
+                var order = orderToFetch.FirstOrDefault();
 
                 if (order != null)
                 {
-                    orderToUpdate.Id = order.Id;
-                    orderToUpdate.OrderDate = order.OrderDate;
-                    orderToUpdate.OrderIdentifier = order.OrderIdentifier;
-                    orderToUpdate.OrderServices = order.OrderServices;
-                    orderToUpdate.OrderTotal = order.OrderTotal;
-                    orderToUpdate.Status = order.Status;
-                    orderToUpdate.WaitingTimeInMinutes = order.WaitingTimeInMinutes;
-                    orderToUpdate.BarberQueueId = newBarberQueue;
+                    orderToCreate.BarberQueueId = orderToReassign.NewQueueId.Value;
+                    orderToCreate.CustomerId = order.CustomerId;
+                    orderToCreate.OrderServices = mapper.Map<List<OrderServiceToAddDTO>>(order.OrderServices);
 
 
-                    bool isUpdated = await unitOfWork.OrdersManager.UpdateAsync(orderToUpdate);
-                    if (isUpdated)
+                    var isRemoved = await RemoveOrder(order.Id, order.CustomerId);
+                    if (isRemoved.Succeeded)
                     {
-
-                        result.Data = true;
-                        result.Succeeded = true;
-                        return result;
+                        var orderAdditionResult = await AddOrderToQueue(orderToCreate);
+                        if (orderAdditionResult.Succeeded)
+                        {
+                            result.Data = true;
+                            result.Succeeded = true;
+                            return result;
+                        }
+                        else
+                        {
+                            result.Errors.Add("Error adding order to new queue !");
+                            result.Succeeded = false;
+                            return result;
+                        }
                     }
                     else
                     {
                         result.Succeeded = false;
-                        result.Errors.Add("Error changing Order queue");
+                        result.Errors.Add("Error removing order from original queue !");
                         return result;
                     }
                 }
@@ -433,7 +438,88 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+        public async Task<ApiResponse<string>> RemoveOrder(int orderId, int customerId)
+        {
+            //Cancel Order: set order status to cancelled, pop order from corresponding queue.
+
+            ApiResponse<string> result = new ApiResponse<string>();
+
+            try
+            {
+                var order = await unitOfWork.OrdersManager.GetAsync(b => b.Id == orderId, 0, 0, null, includeProperties: "OrderServices");
+                Order OrderToUpdate = order.FirstOrDefault();
+                if (OrderToUpdate != null)
+                {
+                    var barberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == OrderToUpdate.BarberQueueId, 0, 0, null, includeProperties: "Orders");
+                    if (barberQueue != null)
+                    {
+                        BarberQueue QueueToUpdate = barberQueue.FirstOrDefault();
+                        for (int i = 0; i < QueueToUpdate.Orders.Count; i++)
+                        {
+                            if (QueueToUpdate.Orders[i].Id == orderId)
+                            {
+                                QueueToUpdate.Orders.Remove(QueueToUpdate.Orders[i]);
+                            }
+                        }
+                        if (QueueToUpdate.Orders.Count == 0)
+                        {
+                            QueueToUpdate.QueueStatus = "idle";
+                            QueueToUpdate.QueueWaitingTime = 0;
+                        }
+
+                        var queueUpdateRes = await unitOfWork.BarbersQueuesManager.UpdateAsync(QueueToUpdate);
+                        if (queueUpdateRes)
+                        {
+                           var queueAdjustmentRes = await SetQueueWaitingTimes();
+                           await unitOfWork.SaveChangesAsync();
+                            if (queueAdjustmentRes.Succeeded)
+                            {
+                                 result.Data = "Order cancelled successfully.";
+                                 result.Succeeded = true;
+                                 return result;
+                            }
+                            else
+                            {
+                                result.Errors.Add("Error adjusting queue times");
+                                result.Succeeded = false;
+                                return result;
+                            }
+                        }
+                        else
+                        {
+                            result.Errors.Add("Error updating barber queue !");
+                            result.Succeeded = false;
+                            return result;
+                        }                       
+                    }
+                    else
+                    {
+                        result.Data = "Error";
+                        result.Errors.Add("Failed to fetch barber Queue !");
+                        return result;
+                    }
+                }
+                else
+                {
+                    result.Data = "Error.";
+                    result.Errors.Add("Error fetching customer details !");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
     }
+
+
+
+
 
 }
 
