@@ -101,7 +101,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
         public async Task<ApiResponse<BarberDTO>> CreateBarber(CreateBarberDTO model)
         {
             ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
@@ -194,7 +193,69 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<bool>> EditBarber(EditBarberDTO model)
+        {
+            ApiResponse<bool> result = new ApiResponse<bool>();
+            try
+            {
+                Barber BarberToEdit = await unitOfWork.BarbersManager.GetByIdAsync(model.Id);
 
+                if(BarberToEdit != null)
+                {
+                    BarberProfilePhoto barberProfilePhotoToEdit = await unitOfWork.BarberProfilePhotosManager.GetProfilePhotoByBarberId(BarberToEdit.Id);
+
+                    if(barberProfilePhotoToEdit != null)
+                    {
+                        BarberToEdit.NameAR = model.NameAR;
+                        BarberToEdit.NameEN = model.NameEN;
+
+                        barberProfilePhotoToEdit.Path = model.BarberProfilePhotoPath;
+
+                        var barberResult = await unitOfWork.BarbersManager.UpdateAsync(BarberToEdit);
+
+                        var barberProfilePhotoResult = await unitOfWork.BarberProfilePhotosManager.UpdateAsync(barberProfilePhotoToEdit);
+
+                        
+
+                        if(barberResult == true && barberProfilePhotoResult == true)
+                        {
+
+                            await unitOfWork.SaveChangesAsync();
+
+                            result.Succeeded = true;
+                            result.Data = true;
+                            return result;
+
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Errors.Add("Failed to update barber information ! ");
+                            return result;
+                        }
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Unable to find barber profile photo with specified barber id ! ");
+                        return result;
+                    }
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to find barber with specified id ! ");
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
         public async Task<ApiResponse<List<BarberDTO>>> GetAllBarbers()
         {
             ApiResponse<List<BarberDTO>> result = new ApiResponse<List<BarberDTO>>();
@@ -256,7 +317,6 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-
         public async Task<ApiResponse<bool>> DeleteBarberById(int id)
         {
             ApiResponse<bool> result = new ApiResponse<bool>();

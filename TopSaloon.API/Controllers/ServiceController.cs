@@ -21,10 +21,10 @@ namespace TopSalon.API.Controllers
         {
             return await AddItemResponseHandler(async () => await service.CreateService(model));
         }
-        [HttpPost("DeleteService")]
-        public async Task<IActionResult> DeleteService(string serviceId)
+        [HttpGet("DeleteService/{ID}")]
+        public async Task<IActionResult> DeleteService(string ID)
         {
-            return await AddItemResponseHandler(async () => await service.Deleteservice(serviceId));
+            return await AddItemResponseHandler(async () => await service.Deleteservice(ID));
         }
         
         [HttpPut("EditService")]

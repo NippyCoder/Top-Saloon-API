@@ -36,7 +36,7 @@ namespace TopSaloon.API
         {
 
             //services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC13;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC17\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
+           services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC17\\SQLEXPRESS;Database=TOPSALOON;User Id=sa;Password=P@ssw0rd;"));
 
             // services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=tcp:boltsql2020.database.windows.net,1433;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=boltadmin;Password=S3cur!ty;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
 
