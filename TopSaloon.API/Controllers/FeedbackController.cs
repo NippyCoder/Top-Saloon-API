@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TopSaloon.API.Controllers.Common;
 using TopSaloon.DTOs.Models;
+using TopSaloon.Entities.Models;
 using TopSaloon.ServiceLayer;
 
 namespace TopSaloon.API.Controllers
@@ -62,6 +63,12 @@ namespace TopSaloon.API.Controllers
         {
             return await GetResponseHandler(async () => await service.GetAllOrderFeedback());
         }
+           [HttpPost("updateOrderFeedbackQuestion")]
+        public async Task<IActionResult> updateOrderFeedbackQuestion(OrderFeedbackDTO orderFeedback)
+        {
+            return await AddItemResponseHandler(async () => await service.updateOrderFeedbackQuestion(orderFeedback));
+        }
+
 
     }
 }
