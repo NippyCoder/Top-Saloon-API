@@ -60,6 +60,7 @@ namespace TopSaloon.API.Controllers
         {
             return await AddItemResponseHandler(async () => await service.GetBarberDetailsReports(id));
         }
+
         [HttpGet("GetBarberAllCustomersHandledById/{id}")]
         public async Task<IActionResult> GetBarberAllCustomersHandled(int id)
         {
@@ -72,11 +73,18 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.ChangeBarberStatus(id));
         }
 
-        //[HttpGet("SignInBarber/{id}")]
-        //public async Task<IActionResult> SignInBarber(int id)
-        //{
-        //    return await AddItemResponseHandler(async () => await service.SignInBarber(id));
-        //}
+        [HttpGet("SignInBarber/{id}")]
+        public async Task<IActionResult> SignInBarber(int id)
+        {
+            return await AddItemResponseHandler(async () => await service.SignInBarber(id));
+        }
+
+
+        [HttpGet("SignOutBarber/{id}")]
+        public async Task<IActionResult> SignOutBarber(int id)
+        {
+            return await AddItemResponseHandler(async () => await service.SignOutBarber(id));
+        }
 
 
         [HttpGet("DeleteBarberById/{id}")]
