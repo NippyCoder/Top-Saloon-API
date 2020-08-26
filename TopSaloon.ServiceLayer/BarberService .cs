@@ -392,7 +392,6 @@ namespace TopSaloon.ServiceLayer
             }
 
         }
-
         public async Task<ApiResponse<BarberDTO>> ChangeBarberStatus(int id)
         {
             ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
@@ -444,52 +443,130 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<bool>> SignInBarber(int id)
+        {
+            ApiResponse<bool> result = new ApiResponse<bool>();
+            try
+            {
+                Barber barber = await unitOfWork.BarbersManager.GetByIdAsync(id);
 
+                if (barber != null)
+                {
+                    var barberLoginResult = await unitOfWork.BarberLoginsManager.GetAsync(b => b.BarberId == id && b.LoginDateTime.Value.Date == DateTime.Now.Date);
 
-        //public async Task<ApiResponse<BarberDTO>> SignInBarber(int id)
-        //{
-        //    ApiResponse<BarberDTO> result = new ApiResponse<BarberDTO>();
-        //    try
-        //    {
-        //        Barber barberToEdit = await unitOfWork.BarbersManager.GetByIdAsync(id);
+                    if(barberLoginResult.FirstOrDefault() == null)
+                    {
 
-        //        if (barberToEdit != null)
-        //        {
-        //            BarberLogin barberLoginResult = await unitOfWork.BarberLoginsManager.GetAsync(b => b.BarberId == id );
+                        BarberLogin newLogin = new BarberLogin();
 
-        //            var res = await unitOfWork.BarbersManager.UpdateAsync(barberToEdit);
+                        newLogin.BarberId = barber.Id;
 
-        //            await unitOfWork.SaveChangesAsync();
+                        newLogin.LoginDateTime = DateTime.Now;
 
-        //            if (res == true)
-        //            {
-        //                result.Succeeded = true;
-        //                result.Data = mapper.Map<BarberDTO>(barberToEdit);
-        //                return result;
-        //            }
-        //            else
-        //            {
-        //                result.Succeeded = false;
-        //                result.Errors.Add("Failed to update barber status !");
-        //                return result;
-        //            }
+                        var res = await unitOfWork.BarberLoginsManager.CreateAsync(newLogin);
 
-        //        }
-        //        else
-        //        {
-        //            result.Succeeded = false;
-        //            result.Errors.Add("Failed to find specified barber !");
-        //            return result;
-        //        }
+                        await unitOfWork.SaveChangesAsync();
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Succeeded = false;
-        //        result.Errors.Add(ex.Message);
-        //        return result;
-        //    }
-        //}
+                        if(res != null)
+                        {
+                            result.Succeeded = true;
+                            result.Data = true;
+                            return result;
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Data = false;
+                            result.Errors.Add("Failed to sign in barber !");
+                            return result;
+                        }
+
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Data = false;
+                        result.Errors.Add("Barber already signed in today !");
+                        return result;
+                    }
+       
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Failed to find specified barber !");
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+        public async Task<ApiResponse<bool>> SignOutBarber(int id)
+        {
+            ApiResponse<bool> result = new ApiResponse<bool>();
+
+            try
+            {
+                Barber barber = await unitOfWork.BarbersManager.GetByIdAsync(id);
+
+                if (barber != null)
+                {
+                    var barberLoginResult = await unitOfWork.BarberLoginsManager.GetAsync(b => b.BarberId == id && b.LoginDateTime.Value.Date == DateTime.Now.Date);
+
+                    if (barberLoginResult.FirstOrDefault() == null)
+                    {
+                        result.Succeeded = false;
+                        result.Data = false;
+                        result.Errors.Add("Barber hasn't signed in today , Barber needs to sign in first in order to be able to sign out !");
+                        return result;
+                    }
+                    else
+                    {
+                        BarberLogin barberLoginToEdit = barberLoginResult.FirstOrDefault();
+
+                        barberLoginToEdit.logoutDateTime = DateTime.Now;
+
+                        var res = await unitOfWork.BarberLoginsManager.UpdateAsync(barberLoginToEdit);
+
+                        await unitOfWork.SaveChangesAsync();
+
+                        if(res == true)
+                        {
+                            result.Succeeded = true;
+                            result.Data = true;
+                            return result;
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Data = false;
+                            result.Errors.Add("Failed to sign out barber !");
+                            return result;
+                        } 
+                    }
+
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Failed to find specified barber !");
+                    return result;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
 
 
     }

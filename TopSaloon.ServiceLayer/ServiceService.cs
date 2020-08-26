@@ -186,5 +186,32 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<ServiceDTO>> GetServicesById(int id)
+        {
+            ApiResponse<ServiceDTO> result = new ApiResponse<ServiceDTO>();
+            try
+            {
+                var services = await unitOfWork.ServicesManager.GetByIdAsync(id);
+                if (services != null)
+                {
+                    result.Data = mapper.Map<ServiceDTO>(services); 
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Errors.Add("Unable to get the service maybe wrong id!");
+                    result.Succeeded = false;
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
     }
 }
