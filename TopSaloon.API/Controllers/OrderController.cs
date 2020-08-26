@@ -52,5 +52,12 @@ namespace TopSaloon.API.Controllers
         {
             return await EditItemResponseHandler(async () => await service.ConfirmOrderServices(orderServices));
         }
+        //getAllCompleteOrderByDate
+        [HttpGet("GetAllCompleteOrderByDate/{date}")]
+        public async Task<IActionResult> getAllCompleteOrderByDate(DateTime date)
+        {
+            return await GetResponseHandler(async () => await service.getAllCompleteOrderByDate(date));
+        }
+
     }
 }
