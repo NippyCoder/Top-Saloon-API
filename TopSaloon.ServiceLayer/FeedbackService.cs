@@ -186,7 +186,7 @@ namespace TopSaloon.ServiceLayer
             ApiResponse<OrderFeedbackDTO> result = new ApiResponse<OrderFeedbackDTO>();
             try
             {
-                var orderFeedback = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.Id == Id, includeProperties: "OrderFeedbackQuestions");
+                var orderFeedback = await unitOfWork.OrderFeedBacksManager.GetAsync(b => b.CompleteOrderId == Id, includeProperties: "OrderFeedbackQuestions");
                 List<OrderFeedback> order= orderFeedback.ToList(); 
 
                 if (order != null)
@@ -306,7 +306,44 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
+        public async Task<ApiResponse<bool>> updateOrderFeedbackQuestion(OrderFeedbackDTO orderFeedback)
+        {
+
+            ApiResponse<bool> result = new ApiResponse<bool>();
+            try
+            {
+                orderFeedback.IsSubmitted = true;
+                orderFeedback.Date = DateTime.Now;
+                var orderFeedbackObj = await unitOfWork.OrderFeedBacksManager.UpdateAsync(mapper.Map<OrderFeedback>(orderFeedback));
+
+                if (orderFeedbackObj )
+                {
+               
+                   await unitOfWork.SaveChangesAsync();
+                   
+                    result.Succeeded = true;
+                    
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Unable to submit your feedback!");
+                    return result;
+                }
+                //End of try . 
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                result.ErrorType = ErrorType.SystemError;
+                return result;
+            }
+        }
 
 
-    }
+    
+
+}
 }
