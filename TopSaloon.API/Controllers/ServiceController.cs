@@ -37,6 +37,12 @@ namespace TopSalon.API.Controllers
         {
              return await GetResponseHandler(async () => await service.GetAllServices());
         }
+        [HttpGet("getServicesById/{id}")]
+        public async Task<IActionResult> GetServicesById(int id)
+        {
+            return await GetResponseHandler(async () => await service.GetServicesById(id));
+        }
+
 
     }
 }

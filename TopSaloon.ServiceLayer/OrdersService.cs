@@ -555,6 +555,34 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+        public async Task<ApiResponse<List<CompleteOrderDTO>>> getAllCompleteOrderByDate(DateTime date)
+        {
+            var result = new ApiResponse<List<CompleteOrderDTO>>();
+            try
+            {
+                var Complete = await unitOfWork.CompleteOrdersManager.GetAsync(a=>a.OrderDateTime==date);
+                List<CompleteOrder> completeorderlist = Complete.ToList();
+                if (completeorderlist != null)
+                {
+                    result.Data = mapper.Map<List<CompleteOrderDTO>>(completeorderlist);
+                    result.Succeeded = true;
+                    return result;
+                }
+                else
+                {
+                    result.Succeeded = false;
+                    result.Errors.Add("Error fetching Barber Queues");
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Succeeded = false;
+                result.Errors.Add(ex.Message);
+                return result;
+            }
+        }
+
     }
 }
 
