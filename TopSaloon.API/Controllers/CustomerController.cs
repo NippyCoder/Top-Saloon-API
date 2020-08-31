@@ -30,10 +30,10 @@ namespace TopSaloon.API.Controllers
             return await AddItemResponseHandler(async () => await service.Login(loginRequest));
         }
 
-        [HttpPost("GuestLogin")]
+        [HttpGet("GuestLogin")]
         public async Task<IActionResult> GuestLogin()
         {
-            return await AddItemResponseHandler(async () => await service.GuestLogin());
+            return await GetResponseHandler(async () => await service.GuestLogin());
         }
 
         [HttpGet("GetCustomerTotalNumberOfVisit/{id}")]
