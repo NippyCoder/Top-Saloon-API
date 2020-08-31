@@ -57,7 +57,6 @@ namespace TopSaloon.ServiceLayer
             }
         }
 
-
         public async Task<ApiResponse<CompleteOrderDTO>> GetCompleteOrderById(int id)
         {
 
@@ -87,7 +86,6 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
-
 
         public async Task<ApiResponse<bool>> SetOrderService(int orderId)
         {
@@ -328,23 +326,27 @@ namespace TopSaloon.ServiceLayer
         }
             //--------------------------------- Finalize Order ------------------------------------------------//
 
-            public async Task<ApiResponse<string>> FinalizeOrder(int orderId, int customerId)
+        public async Task<ApiResponse<string>> FinalizeOrder(int orderId, int customerId)
             {
                 ApiResponse<string> result = new ApiResponse<string>();
 
             try
             {
                 var order = await unitOfWork.OrdersManager.GetAsync(b => b.Id == orderId, 0, 0, null, includeProperties: "OrderServices");
+
                 Order OrderToUpdate = order.FirstOrDefault();
+
                 CompleteOrder OrderHistory = new CompleteOrder();
+
                 OrderHistory.OrderServicesList = "";
+
                 if (OrderToUpdate != null)
                 {
                     var customer = await unitOfWork.CustomersManager.GetByIdAsync(customerId);
+
                     if (customer != null)
                     {
                         OrderToUpdate.Status = "Done";
-                        var isUpdated_OrderService = false;
                         OrderHistory.OrderDateTime = OrderToUpdate.OrderDate;
                         OrderHistory.OrderFinishTime = OrderToUpdate.FinishTime;
                         OrderHistory.OrderTotalAmount = OrderToUpdate.OrderTotal;
@@ -356,23 +358,21 @@ namespace TopSaloon.ServiceLayer
                         {
                             if (OrderToUpdate.OrderServices[i].IsConfirmed.HasValue)
                             {
-                                OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].ServiceId + ","; // orderservices[i].ServiceId
-                                isUpdated_OrderService = true;
+                                OrderHistory.OrderServicesList = OrderHistory.OrderServicesList + OrderToUpdate.OrderServices[i].ServiceId + ","; 
                             }
                         }
 
-                        var OrderUpdateResult = false;
-                        if (isUpdated_OrderService)
-                        {
-                            OrderUpdateResult = await unitOfWork.OrdersManager.UpdateAsync(OrderToUpdate);
-                        }
-                        //= await unitOfWork.SaveChangesAsync();
+                        var OrderUpdateResult = await unitOfWork.OrdersManager.UpdateAsync(OrderToUpdate);
+                        
+
                         if (OrderUpdateResult)
                         {
                             var barberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == OrderToUpdate.BarberQueueId, 0, 0, null, includeProperties: "Orders");
+
                             if (barberQueue != null)
                             {
                                 BarberQueue QueueToUpdate = barberQueue.FirstOrDefault();
+
                                 for (int i = 0; i < QueueToUpdate.Orders.Count; i++)
                                 {
                                     if (QueueToUpdate.Orders[i].Id == orderId)
@@ -380,32 +380,38 @@ namespace TopSaloon.ServiceLayer
                                         QueueToUpdate.Orders.Remove(QueueToUpdate.Orders[i]);
                                     }
                                 }
+
                                 if (QueueToUpdate.Orders.Count == 0)
                                 {
                                     QueueToUpdate.QueueStatus = "idle";
                                 }
                                 else //Re-Adjust Queue Finish Time For Remaining Orders
                                 {
-                                    for (int i = 0; i < QueueToUpdate.Orders.Count; i++)
-                                    {
-                                        if (i == 0)
-                                        {
-                                            QueueToUpdate.Orders[i].FinishTime =
-                                                QueueToUpdate.Orders[i].OrderDate.Value.AddMinutes
-                                                (Convert.ToDouble(QueueToUpdate.Orders[i].TotalServicesWaitingTime));
-                                        }
-                                        else
-                                        {
-                                            QueueToUpdate.Orders[i].FinishTime =
-                                                QueueToUpdate.Orders[i - 1].FinishTime.Value.AddMinutes
-                                                (Convert.ToDouble(QueueToUpdate.Orders[i].TotalServicesWaitingTime));
-                                        }
-                                    }
+
+                                    await SetQueueWaitingTimes();
+
+                                    //for (int i = 0; i < QueueToUpdate.Orders.Count; i++)
+                                    //{
+                                    //    if (i == 0)
+                                    //    {
+                                    //        QueueToUpdate.Orders[i].FinishTime =
+                                    //            QueueToUpdate.Orders[i].OrderDate.Value.AddMinutes
+                                    //            (Convert.ToDouble(QueueToUpdate.Orders[i].TotalServicesWaitingTime));
+                                    //    }
+                                    //    else
+                                    //    {
+                                    //        QueueToUpdate.Orders[i].FinishTime =
+                                    //            QueueToUpdate.Orders[i - 1].FinishTime.Value.AddMinutes
+                                    //            (Convert.ToDouble(QueueToUpdate.Orders[i].TotalServicesWaitingTime));
+                                    //    }
+                                    //}
                                 }
+
                                 OrderHistory.BarberId = QueueToUpdate.BarberId;
                                 await unitOfWork.BarbersQueuesManager.UpdateAsync(QueueToUpdate);
                                 var completeOrder = await unitOfWork.CompleteOrdersManager.CreateAsync(OrderHistory);
                                 await unitOfWork.SaveChangesAsync();
+
                                 if (completeOrder != null)
                                 {
 
@@ -427,11 +433,30 @@ namespace TopSaloon.ServiceLayer
                                         await unitOfWork.OrderFeedBackQuestionsManager.CreateAsync(mapper.Map<OrderFeedbackQuestion>(orderFeedbackQuestion));
                                         await unitOfWork.SaveChangesAsync();
                                     }
-                                    //Update section
-                                    //await unitOfWork.SaveChangesAsync();
-                                    result.Data = "Order finalized successfully.";
-                                    result.Succeeded = true;
-                                    return result;
+
+                                    Barber barberToUpdate = await unitOfWork.BarbersManager.GetByIdAsync(completeOrder.BarberId);
+
+                                    barberToUpdate.NumberOfCustomersHandled++;
+
+                                    var barberUpdateResult = await unitOfWork.BarbersManager.UpdateAsync(barberToUpdate);
+
+
+
+
+                                    if(barberUpdateResult == true)
+                                    {
+                                        await unitOfWork.SaveChangesAsync();
+
+                                        result.Data = "Order finalized successfully.";
+                                        result.Succeeded = true;
+                                        return result;
+                                    }
+                                    else
+                                    {
+                                        result.Data = "Error";
+                                        result.Errors.Add("Failed to update barber !");
+                                        return result;
+                                    }
                                 }
                                 else
                                 {
@@ -480,6 +505,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
             }
+
         public async Task<ApiResponse<bool>> SetQueueWaitingTimes()
         {
             var result = new ApiResponse<bool>();
@@ -579,6 +605,7 @@ namespace TopSaloon.ServiceLayer
                 return result;
             }
         }
+
         public async Task<ApiResponse<List<CompleteOrderDTO>>> getAllCompleteOrderByDate(DateTime date)
         {
             var result = new ApiResponse<List<CompleteOrderDTO>>();
@@ -609,5 +636,3 @@ namespace TopSaloon.ServiceLayer
 
     }
 }
-
-//

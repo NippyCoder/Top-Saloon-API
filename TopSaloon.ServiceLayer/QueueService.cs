@@ -61,47 +61,35 @@ namespace TopSaloon.ServiceLayer
             var result = new ApiResponse<bool>();
             BarberQueue Queue = new BarberQueue();
             Order currentOrder = new Order();
-            order.TotalServicesWaitingTime = 0;
-            order.OrderTotal = 0;
-            for (int i=0; i<order.OrderServices.Count; i++)
+
+            currentOrder.CustomerId = order.CustomerId;
+            currentOrder.BarberQueueId = order.BarberQueueId;
+            currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices);
+
+            for (int i = 0; i < currentOrder.OrderServices.Count; i++)
             {
-                var orderServiceToFetch = await unitOfWork.ServicesManager.GetAsync(s => s.Id == order.OrderServices[i].ServiceId);
-                var orderService = orderServiceToFetch.FirstOrDefault();
-                order.OrderServices[i].NameAR = orderService.NameAR;
-                order.OrderServices[i].NameEN = orderService.NameEN;
-                order.OrderServices[i].Price = orderService.Price;
-                order.OrderServices[i].Time = orderService.Time;
+                currentOrder.TotalServicesWaitingTime += currentOrder.OrderServices[i].Time;
+                currentOrder.OrderTotal += currentOrder.OrderServices[i].Price;
+                currentOrder.OrderServices[i].IsConfirmed = false;
             }
-            for(int i=0; i<order.OrderServices.Count; i++)
-            {
-                order.TotalServicesWaitingTime += order.OrderServices[i].Time;
-                order.OrderTotal += order.OrderServices[i].Price;
-                order.OrderServices[i].IsConfirmed = false;
-            }
+
+
             try
             {
-                var BarberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == order.BarberQueueId, 0, 0, null, includeProperties: "Orders");
+                var BarberQueue = await unitOfWork.BarbersQueuesManager.GetAsync(b => b.Id == currentOrder.BarberQueueId, 0, 0, null, includeProperties: "Orders");
                 Queue = BarberQueue.FirstOrDefault();
                 if (Queue != null)
                 {
-                    // var QueueOrders = await unitOfWork.OrdersManager.GetAsync(b => b.BarberQueueId == QueueId, 0, 0, null, includeProperties: "OrderServices");
-
-                    if (Queue.Orders.Count == 0 && Queue.QueueStatus == "idle") // Empty queue 
+                    if (Queue.Orders.Count == 0 && Queue.QueueStatus == "idle") // if queue is empty 
                     {
-                        currentOrder.BarberQueueId = order.BarberQueueId;
                         currentOrder.OrderDate = DateTime.Now;
-                        currentOrder.FinishTime = DateTime.Now.AddMinutes(Convert.ToDouble(order.TotalServicesWaitingTime));
-                        currentOrder.OrderTotal = order.OrderTotal;
-                        currentOrder.WaitingTimeInMinutes = order.TotalServicesWaitingTime;
-                        currentOrder.TotalServicesWaitingTime = order.TotalServicesWaitingTime;
-                        currentOrder.Status = "inprogress";
-                        currentOrder.CustomerId = order.CustomerId;
+                        currentOrder.FinishTime = DateTime.Now.AddMinutes(Convert.ToDouble(currentOrder.TotalServicesWaitingTime));
+                        currentOrder.Status = "Inprogress";
                         var customer = await unitOfWork.CustomersManager.GetByIdAsync(currentOrder.CustomerId);
                         currentOrder.CustomerMobile = customer.PhoneNumber;
                         currentOrder.CustomerName = customer.Name;
-                        currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices.ToList());
+
                         var CreationResult = await unitOfWork.OrdersManager.CreateAsync(currentOrder);
-            
                         if (CreationResult != null)
                         {
                             OrderService ServiceCreationResult;
@@ -115,6 +103,7 @@ namespace TopSaloon.ServiceLayer
                             var FinalRes = await unitOfWork.SaveChangesAsync();
                             if (FinalRes)
                             {
+                                await SetQueueWaitingTimes();
                                 result.Succeeded = true;
                                 result.Data = true;
                                 return result;
@@ -135,11 +124,7 @@ namespace TopSaloon.ServiceLayer
                     else
                     {
                         currentOrder.OrderDate = DateTime.Now;
-                        currentOrder.OrderTotal = order.OrderTotal;
                         currentOrder.Status = "pending";
-                        currentOrder.WaitingTimeInMinutes = order.TotalServicesWaitingTime;
-                        currentOrder.TotalServicesWaitingTime = order.TotalServicesWaitingTime;
-                        currentOrder.CustomerId = order.CustomerId;
                         for (int i = 0; i < Queue.Orders.Count; i++)
                         {
                             if(i == Queue.Orders.Count - 1)
@@ -147,9 +132,6 @@ namespace TopSaloon.ServiceLayer
                                 currentOrder.FinishTime = Queue.Orders[i].FinishTime.Value.AddMinutes(Convert.ToDouble(currentOrder.TotalServicesWaitingTime));
                             }
                         }
-                        currentOrder.BarberQueueId = order.BarberQueueId;
-                       // currentOrder.CustomerId = order.CustomerId;
-                        currentOrder.OrderServices = mapper.Map<List<OrderService>>(order.OrderServices.ToList());
                         var CreationResult = await unitOfWork.OrdersManager.CreateAsync(currentOrder);
 
                         if (CreationResult != null)

@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TopSaloon.Core;
+using TopSaloon.Core.Managers;
 using TopSaloon.DTOs;
 using TopSaloon.DTOs.Enums;
 using TopSaloon.DTOs.Models;
@@ -29,25 +30,44 @@ namespace TopSaloon.ServiceLayer
         public async Task<ApiResponse<String>> GetSMS()
         {
             ApiResponse<string> result = new ApiResponse<string>();
-            SMS smsValue = await unitOfWork.SMSManager.GetByIdAsync(1);
+
             try
             {
-                if (result != null)
+                var smsResult = await unitOfWork.SMSManager.GetAsync();
+
+                List<SMS> smsList = smsResult.ToList();
+
+                if (smsList.Count == 0)
                 {
-                    result.Data = smsValue.Body;
-                    result.Succeeded = true;
+                    SMS newSMS = new SMS();
 
-                    return result;
+                    newSMS.Body = "Default";
 
-                }
+
+                    var res = await unitOfWork.SMSManager.CreateAsync(newSMS);
+
+                    await unitOfWork.SaveChangesAsync();
+
+                    if (res != null)
+                    {
+                        result.Data = newSMS.Body;
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Failed to save initial SMS !");
+                        return result;
+                    }
+
+                }    
                 else
                 {
-                    result.Succeeded = false;
-                    result.Errors.Add("Failed to retrieve SMS !");
+                    result.Succeeded = true;
+                    result.Data = smsList[0].Body;
                     return result;
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -62,9 +82,19 @@ namespace TopSaloon.ServiceLayer
             ApiResponse<bool> result = new ApiResponse<bool>();
             try
             {
-                SMS value = await unitOfWork.SMSManager.GetByIdAsync(model.Id);
-                value.Body = model.Body;
-                var res = await unitOfWork.SaveChangesAsync();
+
+                var smsResult = await unitOfWork.SMSManager.GetAsync();
+
+                List<SMS> smsList = smsResult.ToList();
+
+                SMS smsToUpdate = smsList[0];
+
+                smsToUpdate.Body = model.Body;
+
+                var res = await unitOfWork.SMSManager.UpdateAsync(smsToUpdate);
+
+                await unitOfWork.SaveChangesAsync();
+
                 if (res == true)
                 {
                     result.Data = true;
