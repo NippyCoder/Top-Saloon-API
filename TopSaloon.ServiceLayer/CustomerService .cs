@@ -52,7 +52,7 @@ namespace TopSaloon.ServiceLayer
                     return result;
                 }
                 result.Succeeded = false;
-                result.Errors.Add("Customer already exists !");
+                result.Errors.Add("Phone number not registered , Kindly create a new account !");
                 result.ErrorType = ErrorType.LogicalError;
                 return result;
             }
@@ -71,6 +71,8 @@ namespace TopSaloon.ServiceLayer
                 Customer newCustomer = new Customer();
                 newCustomer.Name = model.Name;
                 newCustomer.PhoneNumber = model.PhoneNumber;
+                newCustomer.Email = model.Email;
+
                 newCustomer.TotalNumberOfVisits = 0;
 
                 Customer customerResult = await unitOfWork.CustomersManager.GetCustomerByPhoneNumber(model.PhoneNumber);
@@ -254,45 +256,119 @@ namespace TopSaloon.ServiceLayer
 
                 List<GuestNumber> currentGuestNumberList = currentGuestNumberResult.ToList();
 
-                GuestNumber currentGuestNumber = currentGuestNumberList[0];
-
-                Customer customer = new Customer();
-
-                customer.Name = "Guest " + currentGuestNumber.CurrentGuestNumber.ToString();
-
-                customer.LastVisitDate = DateTime.Now;
-
-                customer.PhoneNumber = "00000000";
-
-                customer.Email = "Guest";
-
-                var customerResult = await unitOfWork.CustomersManager.CreateAsync(customer);
-
-                var guestNumberUpdateResult = await unitOfWork.GuestNumberManager.GetByIdAsync(currentGuestNumber.Id);
-
-                guestNumberUpdateResult.CurrentGuestNumber++;
-
-                var res = await unitOfWork.SaveChangesAsync();
-
-                CustomerInfoDTO customerInfoToReturn = new CustomerInfoDTO();
-
-                customerInfoToReturn.Id = customer.Id;
-                customerInfoToReturn.Name = customer.Name;
-                customerInfoToReturn.LastVisitDate = customer.LastVisitDate;
-
-                if (res == true)
+                if (currentGuestNumberList.Count == 0)
                 {
-                    result.Data = customerInfoToReturn;
-                    result.Data.Name = customerResult.Name;
-                    result.Succeeded = true;
-                    return result;
+                    GuestNumber initialGuestNumber = new GuestNumber();
+
+                    initialGuestNumber.CurrentGuestNumber = 0;
+
+
+                    var guestNumberResult = await unitOfWork.GuestNumberManager.CreateAsync(initialGuestNumber);
+
+                    await unitOfWork.SaveChangesAsync();
+
+                    if (guestNumberResult != null)
+                    {
+
+                        GuestNumber currentGuestNumber = guestNumberResult;
+
+                        Customer customer = new Customer();
+
+                        customer.Name = "Guest " + currentGuestNumber.CurrentGuestNumber.ToString();
+
+                        customer.LastVisitDate = DateTime.Now;
+
+                        customer.PhoneNumber = "00000000";
+
+                        customer.Email = "Guest";
+
+                        var customerResult = await unitOfWork.CustomersManager.CreateAsync(customer);
+
+                        var guestNumberUpdateResult = await unitOfWork.GuestNumberManager.GetByIdAsync(currentGuestNumber.Id);
+
+                        guestNumberUpdateResult.CurrentGuestNumber++;
+
+                        var res = await unitOfWork.SaveChangesAsync();
+
+                        CustomerInfoDTO customerInfoToReturn = new CustomerInfoDTO();
+
+                        customerInfoToReturn.Id = customer.Id;
+                        customerInfoToReturn.Name = customer.Name;
+                        customerInfoToReturn.LastVisitDate = customer.LastVisitDate;
+
+                        if (res == true)
+                        {
+                            result.Data = customerInfoToReturn;
+                            result.Data.Name = customerResult.Name;
+                            result.Succeeded = true;
+                            return result;
+                        }
+                        else
+                        {
+                            result.Succeeded = false;
+                            result.Errors.Add("Failed to login as guest !");
+                            result.ErrorType = ErrorType.LogicalError;
+                            return result;
+                        }
+
+
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Failed to initialize guest number !");
+                        result.ErrorType = ErrorType.LogicalError;
+                        return result;
+
+                    }
+
                 }
                 else
                 {
-                    result.Succeeded = false;
-                    result.Errors.Add("Failed to login as guest !");
-                    result.ErrorType = ErrorType.LogicalError;
-                    return result;
+
+                    GuestNumber currentGuestNumber = currentGuestNumberList[0];
+
+                    Customer customer = new Customer();
+
+                    customer.Name = "Guest " + currentGuestNumber.CurrentGuestNumber.ToString();
+
+                    customer.LastVisitDate = DateTime.Now;
+
+                    customer.PhoneNumber = "00000000";
+
+                    customer.Email = "Guest";
+
+                    var customerResult = await unitOfWork.CustomersManager.CreateAsync(customer);
+
+                    var guestNumberUpdateResult = await unitOfWork.GuestNumberManager.GetByIdAsync(currentGuestNumber.Id);
+
+                    guestNumberUpdateResult.CurrentGuestNumber++;
+
+                    var res = await unitOfWork.SaveChangesAsync();
+
+                    CustomerInfoDTO customerInfoToReturn = new CustomerInfoDTO();
+
+                    customerInfoToReturn.Id = customer.Id;
+                    customerInfoToReturn.Name = customer.Name;
+                    customerInfoToReturn.LastVisitDate = customer.LastVisitDate;
+
+                    if (res == true)
+                    {
+                        result.Data = customerInfoToReturn;
+                        result.Data.Name = customerResult.Name;
+                        result.Succeeded = true;
+                        return result;
+                    }
+                    else
+                    {
+                        result.Succeeded = false;
+                        result.Errors.Add("Failed to login as guest !");
+                        result.ErrorType = ErrorType.LogicalError;
+                        return result;
+                    }
+
+
+
                 }
             }
             catch (Exception ex)
@@ -414,6 +490,7 @@ namespace TopSaloon.ServiceLayer
             }
             return result;
         }
+
     }
 }
 

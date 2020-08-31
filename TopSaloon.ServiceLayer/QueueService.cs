@@ -346,9 +346,9 @@ namespace TopSaloon.ServiceLayer
                     
                     if(countErrors > 0 )
                     {
-                            result.Succeeded = false;
-                            result.Errors.Add("Error fetching Barber Queues!");
-                            return result;
+                        result.Succeeded = false;
+                        result.Errors.Add("Error fetching Barber Queues!");
+                        return result;
                      }
                     else
                     {
@@ -357,7 +357,6 @@ namespace TopSaloon.ServiceLayer
                         return result;
                     }
                     
-
                 }//End OF MAIN IF  . 
                 else
                 {

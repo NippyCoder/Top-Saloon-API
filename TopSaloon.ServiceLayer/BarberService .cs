@@ -294,7 +294,7 @@ namespace TopSaloon.ServiceLayer
 
             try
             {
-                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available" || b.Status == "Busy", includeProperties: "BarberProfilePhoto,BarberQueue");
+                var Barbers = await unitOfWork.BarbersManager.GetAsync(b => b.Status == "Available", includeProperties: "BarberProfilePhoto,BarberQueue");
 
                 if (Barbers != null)
                 {
@@ -304,7 +304,7 @@ namespace TopSaloon.ServiceLayer
                 }
                 else
                 {
-                    result.Errors.Add("Unable to fetch barber list !");
+                    result.Errors.Add("Unable to fetch available barbers list !");
                     result.Succeeded = false;
                     return result;
                 }
