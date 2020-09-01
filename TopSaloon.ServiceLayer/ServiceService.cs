@@ -37,6 +37,8 @@ namespace TopSaloon.ServiceLayer
                 Service newService = new Service();
                 newService.NameAR = model.NameAR;
                 newService.NameEN = model.NameEN;
+                newService.AdminPath = model.AdminPath;
+                newService.UserPath = model.UserPath;
                 newService.Time = model.Time;
                 newService.Price = model.Price;
                 Service ServiceResult = await unitOfWork.ServicesManager.GetServiceByNameAR(model.NameAR);
@@ -122,6 +124,8 @@ namespace TopSaloon.ServiceLayer
                     service.NameEN = model.NameEN;
                     service.Price = model.Price;
                     service.Time = model.Time;
+                    service.AdminPath = model.AdminImagePath;
+                    service.UserPath = model.UserImagePath;
 
                     await unitOfWork.ServicesManager.UpdateAsync(service);
 

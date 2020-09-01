@@ -11,6 +11,8 @@ namespace TopSaloon.DTOs.Models
         public string NameEN { get; set; }
         public float? Price { get; set; }
         public int? Time { get; set; }
+        public string AdminPath { get; set; }
+        public string UserPath { get; set; }
         public virtual List<ServiceFeedbackQuestionDTO> FeedBackQuestions { get; set; }
     }
 }

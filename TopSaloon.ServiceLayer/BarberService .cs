@@ -123,7 +123,8 @@ namespace TopSaloon.ServiceLayer
                 {
                     BarberProfilePhoto barberProfilePhoto = new BarberProfilePhoto();
                     barberProfilePhoto.BarberId = barberResult.Id;
-                    barberProfilePhoto.Path = model.BarberProfilePhotoPath;
+                    barberProfilePhoto.AdminPath = model.BarberProfilePhotoPathAdmin;
+                    barberProfilePhoto.UserPath = model.BarberProfilePhotoPathUser;
 
                     var barberProfilePhotoResult = await unitOfWork.BarberProfilePhotosManager.CreateAsync(barberProfilePhoto);
 
@@ -209,7 +210,8 @@ namespace TopSaloon.ServiceLayer
                         BarberToEdit.NameAR = model.NameAR;
                         BarberToEdit.NameEN = model.NameEN;
 
-                        barberProfilePhotoToEdit.Path = model.BarberProfilePhotoPath;
+                        barberProfilePhotoToEdit.AdminPath = model.BarberProfilePhotoPathAdmin;
+                        barberProfilePhotoToEdit.UserPath = model.BarberProfilePhotoPathUser;
 
                         var barberResult = await unitOfWork.BarbersManager.UpdateAsync(BarberToEdit);
 

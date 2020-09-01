@@ -10,6 +10,9 @@ namespace TopSaloon.Entities.Models
         public string NameEN { get; set; }
         public float? Price { get; set; }
         public int? Time { get; set; }
+        public string AdminPath { get; set; }
+        public string UserPath { get; set; }
+
         public virtual List<ServiceFeedBackQuestion> FeedBackQuestions { get; set; }
     }
 }

@@ -10,6 +10,7 @@ namespace TopSaloon.DTOs.Models
         public string NameEN { get; set; }
         public int  Id { get; set; }
         public string status { get; set; }
-        public string BarberProfilePhotoPath { get; set; }
+        public string BarberProfilePhotoPathAdmin { get; set; }
+        public string BarberProfilePhotoPathUser { get; set; }
     }
 }
