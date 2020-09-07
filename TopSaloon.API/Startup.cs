@@ -24,6 +24,7 @@ namespace TopSaloon.API
 {
     public class Startup
     {
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -31,10 +32,10 @@ namespace TopSaloon.API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         { 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=192.168.5.202;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=sa;Password=S3cur!ty;"));
+
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer("Server=BOLT-PC15\\SQLEXPRESS;Initial Catalog=TOPSALOON;Persist Security Info=False;User ID=sa;Password=P@ssword;"));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -42,10 +43,20 @@ namespace TopSaloon.API
 
             services.AddCors(options =>
                 options.AddDefaultPolicy(builder =>
-                    builder.WithOrigins("*")
+                    builder.WithOrigins("http://localhost:4200")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    ));
+                    .AllowCredentials()));
+
+            //services.AddCors(options =>
+            //   options.AddDefaultPolicy(builder =>
+            //       builder.WithOrigins("http://192.168.5.201:8005",
+            //                           "http://192.168.5.201:8006",
+            //                           "http://192.168.5.201:8009")
+            //       .WithMethods("POST", "GET", "PUT")
+            //       .WithHeaders("*")
+            //       .AllowCredentials()
+            //     ));
 
             services.AddAutoMapper(typeof(AutoMapperProfile));
 
@@ -58,7 +69,6 @@ namespace TopSaloon.API
             services.AddSwaggerGen();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -68,7 +78,7 @@ namespace TopSaloon.API
 
             app.UseDeveloperExceptionPage();
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
 
             app.UseSwagger();
 
@@ -77,13 +87,28 @@ namespace TopSaloon.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
+            //app.UseCors(policy => policy
+            //   .WithOrigins("http://192.168.5.201:8005",
+            //               "http://192.168.5.201:8006",
+            //               "http://192.168.5.201:8009")
+            //   .WithMethods("POST", "GET", "PUT")
+            //   .WithHeaders("*")
+            //   .AllowCredentials()
+            // );
+
             app.UseCors(policy => policy
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .WithOrigins("*")
-            );
+           .AllowAnyHeader()
+           .AllowAnyMethod()
+           .WithOrigins("http://localhost:4200")
+           .AllowCredentials());
+
+    
 
             app.UseRouting();
+
+
+            //Remove when publishing .
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
