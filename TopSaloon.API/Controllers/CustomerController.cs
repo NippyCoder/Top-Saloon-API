@@ -43,9 +43,9 @@ namespace TopSaloon.API.Controllers
         }
 
         [HttpGet("GetCustomerById/{id}")]
-        public async Task<IActionResult> GetCustomerById(int CustomerId)
+        public async Task<IActionResult> GetCustomerById(int id)
         {
-            return await AddItemResponseHandler(async () => await service.GetCustomerById(CustomerId));
+            return await AddItemResponseHandler(async () => await service.GetCustomerById(id));
         }
 
         [HttpGet("GetCustomerVisitDetails/{id}")]
