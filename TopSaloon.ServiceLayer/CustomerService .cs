@@ -66,6 +66,7 @@ namespace TopSaloon.ServiceLayer
         public async Task<ApiResponse<CustomerDTO>> AddNewCustomer(AddCustomerModel model)
         {
             ApiResponse<CustomerDTO> result = new ApiResponse<CustomerDTO>();
+
             try
             {
                 Customer newCustomer = new Customer();
